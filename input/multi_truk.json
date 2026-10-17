@@ -1,0 +1,24 @@
+{
+  "trucks": [
+    {"id": "Truk-1", "dimensions": {"w": 6, "l": 6, "h": 5}, "max_capacity": 70},
+    {"id": "Truk-2", "dimensions": {"w": 5, "l": 5, "h": 4}, "max_capacity": 50}
+  ],
+  "packages": [
+    {"id": "P1", "dimensions": {"w": 3, "l": 2, "h": 2}, "value": 35, "weight": 11, "is_fragile": false, "eta": 2},
+    {"id": "P2", "dimensions": {"w": 2, "l": 2, "h": 2}, "value": 25, "weight": 8, "is_fragile": false, "eta": 3},
+    {"id": "P3", "dimensions": {"w": 2, "l": 2, "h": 1}, "value": 20, "weight": 5, "is_fragile": true, "eta": 1},
+    {"id": "P4", "dimensions": {"w": 3, "l": 3, "h": 2}, "value": 50, "weight": 16, "is_fragile": false, "eta": 4},
+    {"id": "P5", "dimensions": {"w": 2, "l": 3, "h": 1}, "value": 30, "weight": 7, "is_fragile": true, "eta": 2},
+    {"id": "P6", "dimensions": {"w": 3, "l": 2, "h": 1}, "value": 30, "weight": 9, "is_fragile": false, "eta": 5},
+    {"id": "P7", "dimensions": {"w": 2, "l": 1, "h": 1}, "value": 15, "weight": 4, "is_fragile": false, "eta": 1},
+    {"id": "P8", "dimensions": {"w": 3, "l": 3, "h": 1}, "value": 45, "weight": 12, "is_fragile": false, "eta": 3},
+    {"id": "P9", "dimensions": {"w": 2, "l": 2, "h": 1}, "value": 20, "weight": 6, "is_fragile": true, "eta": 2},
+    {"id": "P10", "dimensions": {"w": 3, "l": 2, "h": 2}, "value": 40, "weight": 12, "is_fragile": false, "eta": 4},
+    {"id": "P11", "dimensions": {"w": 2, "l": 3, "h": 2}, "value": 40, "weight": 13, "is_fragile": false, "eta": 3},
+    {"id": "P12", "dimensions": {"w": 2, "l": 2, "h": 2}, "value": 25, "weight": 7, "is_fragile": true, "eta": 2},
+    {"id": "P13", "dimensions": {"w": 3, "l": 1, "h": 2}, "value": 25, "weight": 8, "is_fragile": false, "eta": 1},
+    {"id": "P14", "dimensions": {"w": 4, "l": 2, "h": 2}, "value": 55, "weight": 15, "is_fragile": false, "eta": 5},
+    {"id": "P15", "dimensions": {"w": 2, "l": 1, "h": 2}, "value": 20, "weight": 6, "is_fragile": false, "eta": 2},
+    {"id": "P16", "dimensions": {"w": 2, "l": 2, "h": 1}, "value": 20, "weight": 5, "is_fragile": false, "eta": 3}
+  ]
+}
