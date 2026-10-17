@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import os
+import random
 from collections.abc import Callable
+from concurrent.futures import Future, ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -45,6 +48,15 @@ class ExperimentResult:
         self.runs.append(ExperimentRun(label, initial_state, final_state, metrics))
 
 
+def folder_with_parameter(name: str, parameter: dict[str, Any]) -> str:
+    return " ".join([name, *(f"{key}={format_value(value)}" for key, value in parameter.items())])
+
+
+def run_seeded(algorithm: LocalSearch, seed: int) -> SearchResult:
+    random.seed(seed)
+    return algorithm.run()
+
+
 class Experiment:
     def __init__(self, problem: Problem, parameter: Parameter, folder_output: Path) -> None:
         self.problem = problem
@@ -57,22 +69,41 @@ class Experiment:
         # Jalanin algoritma sebanyak n_runs kali.
         # configuration sama file_prefix buat ngebedain run antar-konfigurasi GA dlm satu eksperimen.
         entries = []
-        for run_number in range(1, self.parameter.n_runs + 1):
-            description = f" ({configuration})" if configuration else ""
-            global_number = len(experiment_result.runs) + 1
-            self.report_progress(f"{experiment_result.title}: run {global_number}/{total_runs}{description}")
-            result = algorithm.run()
-            entries.append((len(experiment_result.runs), run_number, result))
+        # Seed tiap run diturunkan dari seed global biar hasil tetap reproducible
+        seeds = [random.getrandbits(32) for _ in range(self.parameter.n_runs)]
+        description = f" ({configuration})" if configuration else ""
+        finished = len(experiment_result.runs)
 
-            experiment_result.add_run(f"Run {run_number}", result.initial_state, result.final_state,
-                                      {**algorithm.metrics(result), "Durasi": f"{result.duration:.2f} s"})
+        def report_finished(future: Future[SearchResult]) -> None:
+            nonlocal finished
+            if not future.cancelled():
+                finished += 1
+                self.report_progress(f"{experiment_result.title}: {finished}/{total_runs} run selesai{description}")
 
-            run_label = f"{configuration}, Run {run_number}" if configuration else f"Run {run_number}"
-            save_run(experiment_result.folder, f"{file_prefix}run_{run_number}",
-                     f"{experiment_result.title} ({run_label})", algorithm, result)
+        self.report_progress(f"{experiment_result.title}: {finished}/{total_runs} run selesai{description}")
+        pool = ProcessPoolExecutor(max_workers=min(len(seeds), os.cpu_count() or 1))
+        try:
+            futures = [pool.submit(run_seeded, algorithm, seed) for seed in seeds]
+            for future in futures:
+                future.add_done_callback(report_finished)
+            for run_number, future in enumerate(futures, start=1):
+                result = future.result()
+                entries.append((len(experiment_result.runs), run_number, result))
+
+                experiment_result.add_run(f"Run {run_number}", result.initial_state, result.final_state,
+                                          {**algorithm.metrics(result), "Durasi": f"{result.duration:.2f} s"})
+
+                run_label = f"{configuration}, Run {run_number}" if configuration else f"Run {run_number}"
+                save_run(experiment_result.folder, f"{file_prefix}run_{run_number}",
+                         f"{experiment_result.title} ({run_label})", algorithm, result)
+        except BaseException:
+            pool.shutdown(wait=False, cancel_futures=True)
+            raise
+        pool.shutdown()
         return entries
 
     def run_algorithm(self, algorithm: LocalSearch, folder_name: str) -> tuple[ExperimentResult, list[RunEntry]]:
+        folder_name = folder_with_parameter(folder_name, {**algorithm.parameter(), "n_runs": self.parameter.n_runs})
         experiment_result = ExperimentResult(algorithm.name, algorithm.parameter(), self.folder_output / folder_name)
         entries = self.run_repeated(experiment_result, algorithm, self.parameter.n_runs)
         histories = [result.history for _, _, result in entries]
@@ -112,8 +143,12 @@ class Experiment:
             lambda ax, selected: plot.draw_sa_probability(ax, histories_prob, selected))
         return self.finalize(experiment_result)
 
-    def run_ga(self, title: str, folder_name: str, configurations: list[tuple[int, int]]) -> ExperimentResult:
+    def run_ga(self, title: str, folder_name: str, control: dict[str, Any],
+               configurations: list[tuple[int, int]]) -> ExperimentResult:
         p = self.parameter
+        folder_name = folder_with_parameter(folder_name, {**control, "mutation_rate": p.mutation_rate,
+                                                          "elite_count": p.elite_count, "reinsert": p.reinsert,
+                                                          "n_runs": p.n_runs})
         experiment_result = ExperimentResult(title, {"mutation_rate": p.mutation_rate, "elite_count": p.elite_count,
                                                      "reinsert": format_value(p.reinsert)},
                                              self.folder_output / "genetic_algorithm" / folder_name)
@@ -137,9 +172,11 @@ class Experiment:
     def ga_population_control(self) -> ExperimentResult:
         population_size, iteration_options = self.parameter.ga_population_control
         return self.run_ga("Genetic Algorithm: kontrol jumlah populasi", "population_control",
+                           {"population": population_size, "iterations": "-".join(map(str, iteration_options))},
                            [(population_size, num_iterations) for num_iterations in iteration_options])
 
     def ga_iteration_control(self) -> ExperimentResult:
         num_iterations, population_options = self.parameter.ga_iteration_control
         return self.run_ga("Genetic Algorithm: kontrol banyak iterasi", "iteration_control",
+                           {"iterations": num_iterations, "populations": "-".join(map(str, population_options))},
                            [(population_size, num_iterations) for population_size in population_options])
