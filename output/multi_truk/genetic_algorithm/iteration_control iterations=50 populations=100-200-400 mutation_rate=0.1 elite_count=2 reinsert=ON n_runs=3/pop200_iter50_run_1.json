@@ -1,0 +1,112 @@
+{
+  "parameters": {"population_size": 200, "num_iterations": 50, "mutation_rate": 0.1, "elite_count": 2, "reinsert": true},
+  "initial_state": {
+    "value": 1010,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 235,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P5", "position": [1, 1, 0], "orientation": "wlh", "size": [2, 3, 3]},
+          {"id": "P9", "position": [0, 2, 3], "orientation": "lwh", "size": [5, 2, 2]},
+          {"id": "P11", "position": [3, 4, 3], "orientation": "lhw", "size": [5, 2, 2]},
+          {"id": "P29", "position": [6, 0, 0], "orientation": "hwl", "size": [2, 4, 4]},
+          {"id": "P31", "position": [2, 0, 3], "orientation": "lhw", "size": [3, 2, 1]},
+          {"id": "P34", "position": [0, 4, 0], "orientation": "whl", "size": [1, 2, 4]},
+          {"id": "P37", "position": [4, 0, 1], "orientation": "hlw", "size": [2, 3, 2]},
+          {"id": "P39", "position": [4, 0, 0], "orientation": "wlh", "size": [2, 3, 1]},
+          {"id": "P43", "position": [3, 3, 0], "orientation": "wlh", "size": [3, 3, 3]},
+          {"id": "P44", "position": [5, 0, 4], "orientation": "wlh", "size": [3, 3, 1]}
+        ]
+      },
+      {
+        "id": "Truk-2",
+        "weight": 98,
+        "max_capacity": 150,
+        "packages": [
+          {"id": "P2", "position": [4, 0, 0], "orientation": "lhw", "size": [2, 2, 4]},
+          {"id": "P12", "position": [4, 2, 0], "orientation": "lwh", "size": [2, 2, 1]},
+          {"id": "P27", "position": [4, 2, 1], "orientation": "wlh", "size": [2, 3, 2]},
+          {"id": "P30", "position": [1, 0, 0], "orientation": "whl", "size": [3, 3, 4]},
+          {"id": "P46", "position": [1, 4, 0], "orientation": "whl", "size": [3, 2, 3]}
+        ]
+      },
+      {
+        "id": "Truk-3",
+        "weight": 69,
+        "max_capacity": 120,
+        "packages": [
+          {"id": "P3", "position": [0, 0, 0], "orientation": "wlh", "size": [2, 1, 2]},
+          {"id": "P22", "position": [0, 3, 2], "orientation": "wlh", "size": [2, 1, 2]},
+          {"id": "P23", "position": [1, 2, 0], "orientation": "lhw", "size": [5, 2, 2]},
+          {"id": "P33", "position": [3, 1, 2], "orientation": "whl", "size": [3, 3, 2]},
+          {"id": "P41", "position": [2, 0, 0], "orientation": "whl", "size": [3, 1, 3]},
+          {"id": "P48", "position": [0, 4, 0], "orientation": "lhw", "size": [4, 1, 2]}
+        ]
+      }
+    ],
+    "outside": ["P1", "P4", "P6", "P7", "P8", "P10", "P13", "P14", "P15", "P16", "P17", "P18", "P19", "P20", "P21", "P24", "P25", "P26", "P28", "P32", "P35", "P36", "P38", "P40", "P42", "P45", "P47"]
+  },
+  "final_state": {
+    "value": 1210,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 242,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P3", "position": [1, 2, 0], "orientation": "lwh", "size": [1, 2, 2]},
+          {"id": "P7", "position": [6, 0, 1], "orientation": "hlw", "size": [2, 3, 4]},
+          {"id": "P8", "position": [0, 3, 3], "orientation": "hwl", "size": [3, 2, 2]},
+          {"id": "P12", "position": [4, 0, 0], "orientation": "hwl", "size": [1, 2, 2]},
+          {"id": "P14", "position": [0, 0, 2], "orientation": "wlh", "size": [3, 5, 1]},
+          {"id": "P15", "position": [6, 0, 0], "orientation": "hwl", "size": [2, 4, 1]},
+          {"id": "P16", "position": [5, 0, 0], "orientation": "hwl", "size": [1, 4, 4]},
+          {"id": "P17", "position": [0, 0, 3], "orientation": "lhw", "size": [4, 2, 2]},
+          {"id": "P22", "position": [2, 5, 0], "orientation": "hlw", "size": [2, 1, 2]},
+          {"id": "P24", "position": [0, 5, 2], "orientation": "lwh", "size": [5, 1, 2]},
+          {"id": "P25", "position": [2, 2, 0], "orientation": "lhw", "size": [2, 2, 2]},
+          {"id": "P26", "position": [0, 3, 0], "orientation": "whl", "size": [1, 2, 2]},
+          {"id": "P31", "position": [0, 0, 0], "orientation": "wlh", "size": [1, 3, 2]},
+          {"id": "P33", "position": [6, 3, 1], "orientation": "lhw", "size": [2, 3, 3]},
+          {"id": "P34", "position": [4, 2, 0], "orientation": "whl", "size": [1, 2, 4]},
+          {"id": "P35", "position": [3, 4, 0], "orientation": "wlh", "size": [3, 1, 3]},
+          {"id": "P37", "position": [1, 0, 0], "orientation": "lhw", "size": [3, 2, 2]},
+          {"id": "P42", "position": [1, 4, 0], "orientation": "hwl", "size": [1, 2, 2]}
+        ]
+      },
+      {
+        "id": "Truk-2",
+        "weight": 129,
+        "max_capacity": 150,
+        "packages": [
+          {"id": "P1", "position": [0, 4, 0], "orientation": "lhw", "size": [5, 1, 3]},
+          {"id": "P2", "position": [1, 0, 0], "orientation": "lhw", "size": [2, 2, 4]},
+          {"id": "P23", "position": [0, 2, 0], "orientation": "lhw", "size": [5, 2, 2]},
+          {"id": "P36", "position": [0, 0, 0], "orientation": "whl", "size": [1, 2, 3]},
+          {"id": "P38", "position": [5, 0, 0], "orientation": "wlh", "size": [1, 3, 3]},
+          {"id": "P41", "position": [0, 5, 0], "orientation": "whl", "size": [3, 1, 3]},
+          {"id": "P44", "position": [3, 0, 3], "orientation": "wlh", "size": [3, 3, 1]},
+          {"id": "P45", "position": [3, 0, 0], "orientation": "lwh", "size": [2, 2, 3]},
+          {"id": "P48", "position": [5, 3, 0], "orientation": "hwl", "size": [1, 2, 4]}
+        ]
+      },
+      {
+        "id": "Truk-3",
+        "weight": 101,
+        "max_capacity": 120,
+        "packages": [
+          {"id": "P10", "position": [0, 3, 0], "orientation": "lhw", "size": [3, 1, 2]},
+          {"id": "P29", "position": [4, 0, 0], "orientation": "hlw", "size": [2, 4, 4]},
+          {"id": "P30", "position": [0, 0, 0], "orientation": "lhw", "size": [4, 3, 3]}
+        ]
+      }
+    ],
+    "outside": ["P4", "P5", "P6", "P9", "P11", "P13", "P18", "P19", "P20", "P21", "P27", "P28", "P32", "P39", "P40", "P43", "P46", "P47"]
+  },
+  "history": [1010, 1010, 1010, 1010, 1085, 1090, 1095, 1145, 1145, 1145, 1145, 1145, 1145, 1150, 1150, 1150, 1150, 1150, 1150, 1150, 1150, 1150, 1150, 1165, 1175, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1180, 1210, 1210, 1210, 1210, 1210, 1210, 1210, 1210, 1210],
+  "iterations": 50,
+  "duration": 5.031450033187866,
+  "history_avg": [675.1, 674.75, 687.15, 700.275, 714.225, 727.45, 741.275, 752.05, 769.075, 767.6, 768.6, 771.7, 785.375, 795.375, 815.85, 836.65, 837.9, 849.325, 847.0, 848.475, 841.55, 842.45, 846.025, 844.125, 837.0, 824.725, 832.9, 837.825, 847.525, 856.075, 856.425, 867.025, 864.75, 870.65, 880.275, 886.85, 906.65, 908.4, 898.075, 898.8, 904.175, 901.15, 900.025, 911.275, 906.2, 908.675, 906.3, 909.65, 911.075, 918.7, 916.125]
+}

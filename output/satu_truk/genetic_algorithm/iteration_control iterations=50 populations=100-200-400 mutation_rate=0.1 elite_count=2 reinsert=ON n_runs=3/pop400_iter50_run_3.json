@@ -1,0 +1,64 @@
+{
+  "parameters": {"population_size": 400, "num_iterations": 50, "mutation_rate": 0.1, "elite_count": 2, "reinsert": true},
+  "initial_state": {
+    "value": 665,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 192,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P3", "position": [3, 3, 0], "orientation": "hwl", "size": [2, 3, 5]},
+          {"id": "P4", "position": [5, 2, 1], "orientation": "hlw", "size": [2, 1, 2]},
+          {"id": "P5", "position": [1, 3, 2], "orientation": "whl", "size": [2, 3, 3]},
+          {"id": "P9", "position": [6, 4, 0], "orientation": "lwh", "size": [2, 2, 2]},
+          {"id": "P10", "position": [5, 1, 1], "orientation": "hlw", "size": [3, 1, 2]},
+          {"id": "P11", "position": [0, 5, 0], "orientation": "whl", "size": [3, 1, 2]},
+          {"id": "P13", "position": [0, 2, 3], "orientation": "wlh", "size": [1, 3, 2]},
+          {"id": "P16", "position": [1, 3, 0], "orientation": "lwh", "size": [2, 2, 2]},
+          {"id": "P17", "position": [5, 3, 0], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P19", "position": [6, 1, 0], "orientation": "hlw", "size": [2, 2, 1]},
+          {"id": "P20", "position": [0, 1, 0], "orientation": "hlw", "size": [1, 4, 3]},
+          {"id": "P21", "position": [5, 3, 2], "orientation": "lwh", "size": [3, 1, 1]},
+          {"id": "P23", "position": [5, 1, 3], "orientation": "lwh", "size": [3, 3, 2]},
+          {"id": "P24", "position": [1, 0, 0], "orientation": "whl", "size": [4, 3, 3]},
+          {"id": "P29", "position": [5, 0, 0], "orientation": "whl", "size": [3, 1, 4]},
+          {"id": "P36", "position": [6, 4, 2], "orientation": "lwh", "size": [2, 2, 1]}
+        ]
+      }
+    ],
+    "outside": ["P1", "P2", "P6", "P7", "P8", "P12", "P14", "P15", "P18", "P22", "P25", "P26", "P27", "P28", "P30", "P31", "P32", "P33", "P34", "P35"]
+  },
+  "final_state": {
+    "value": 720,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 208,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P1", "position": [3, 0, 0], "orientation": "hwl", "size": [2, 3, 5]},
+          {"id": "P2", "position": [2, 1, 0], "orientation": "whl", "size": [1, 2, 5]},
+          {"id": "P3", "position": [0, 1, 0], "orientation": "hwl", "size": [2, 3, 5]},
+          {"id": "P4", "position": [0, 4, 0], "orientation": "hlw", "size": [2, 1, 2]},
+          {"id": "P5", "position": [5, 0, 2], "orientation": "whl", "size": [2, 3, 3]},
+          {"id": "P9", "position": [3, 4, 0], "orientation": "lwh", "size": [2, 2, 2]},
+          {"id": "P10", "position": [5, 0, 0], "orientation": "hlw", "size": [3, 1, 2]},
+          {"id": "P11", "position": [0, 5, 0], "orientation": "whl", "size": [3, 1, 2]},
+          {"id": "P13", "position": [7, 0, 2], "orientation": "whl", "size": [1, 2, 3]},
+          {"id": "P15", "position": [0, 4, 2], "orientation": "wlh", "size": [4, 2, 2]},
+          {"id": "P17", "position": [2, 3, 0], "orientation": "hwl", "size": [2, 1, 3]},
+          {"id": "P21", "position": [0, 0, 0], "orientation": "whl", "size": [1, 1, 3]},
+          {"id": "P23", "position": [5, 2, 0], "orientation": "lwh", "size": [3, 3, 2]},
+          {"id": "P24", "position": [4, 3, 2], "orientation": "wlh", "size": [4, 3, 3]},
+          {"id": "P35", "position": [0, 4, 4], "orientation": "lwh", "size": [4, 2, 1]}
+        ]
+      }
+    ],
+    "outside": ["P6", "P7", "P8", "P12", "P14", "P16", "P18", "P19", "P20", "P22", "P25", "P26", "P27", "P28", "P29", "P30", "P31", "P32", "P33", "P34", "P36"]
+  },
+  "history": [665, 665, 665, 665, 665, 665, 665, 665, 685, 685, 685, 690, 695, 695, 695, 695, 710, 710, 710, 710, 710, 710, 710, 710, 710, 710, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720, 720],
+  "iterations": 50,
+  "duration": 4.235217332839966,
+  "history_avg": [440.7375, 410.8625, 392.9875, 383.95, 376.3375, 375.2625, 385.65, 394.05, 393.35, 405.6625, 411.1, 415.2625, 413.35, 411.575, 406.4875, 405.0125, 410.075, 417.2, 421.3, 424.5125, 426.85, 427.675, 433.5125, 443.5375, 448.9125, 448.45, 452.3625, 452.8125, 448.175, 460.8375, 465.6125, 463.875, 469.425, 475.4375, 479.6375, 473.15, 472.875, 467.4375, 473.225, 478.1125, 480.6375, 475.475, 472.025, 470.875, 471.5, 475.2625, 481.9125, 484.725, 484.8375, 488.375, 495.525]
+}

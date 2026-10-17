@@ -1,0 +1,59 @@
+{
+  "parameters": {"population_size": 200, "num_iterations": 50, "mutation_rate": 0.1, "elite_count": 2, "reinsert": true},
+  "initial_state": {
+    "value": 645,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 245,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P2", "position": [0, 4, 3], "orientation": "lwh", "size": [5, 1, 2]},
+          {"id": "P3", "position": [6, 0, 0], "orientation": "hlw", "size": [2, 5, 3]},
+          {"id": "P10", "position": [0, 3, 0], "orientation": "wlh", "size": [2, 1, 3]},
+          {"id": "P12", "position": [2, 0, 0], "orientation": "hlw", "size": [3, 5, 3]},
+          {"id": "P16", "position": [0, 2, 3], "orientation": "whl", "size": [2, 2, 2]},
+          {"id": "P17", "position": [2, 3, 3], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P18", "position": [0, 4, 0], "orientation": "lwh", "size": [2, 2, 2]},
+          {"id": "P20", "position": [2, 5, 0], "orientation": "whl", "size": [3, 1, 4]},
+          {"id": "P21", "position": [5, 2, 0], "orientation": "wlh", "size": [1, 3, 1]},
+          {"id": "P22", "position": [5, 0, 1], "orientation": "hlw", "size": [1, 5, 4]},
+          {"id": "P28", "position": [2, 0, 3], "orientation": "lwh", "size": [3, 3, 2]},
+          {"id": "P29", "position": [5, 5, 0], "orientation": "whl", "size": [3, 1, 4]},
+          {"id": "P36", "position": [0, 1, 0], "orientation": "lwh", "size": [2, 2, 1]}
+        ]
+      }
+    ],
+    "outside": ["P1", "P4", "P5", "P6", "P7", "P8", "P9", "P11", "P13", "P14", "P15", "P19", "P23", "P24", "P25", "P26", "P27", "P30", "P31", "P32", "P33", "P34", "P35"]
+  },
+  "final_state": {
+    "value": 695,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 246,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P1", "position": [0, 1, 0], "orientation": "hlw", "size": [2, 5, 3]},
+          {"id": "P2", "position": [0, 0, 3], "orientation": "lwh", "size": [5, 1, 2]},
+          {"id": "P3", "position": [5, 0, 2], "orientation": "hlw", "size": [2, 5, 3]},
+          {"id": "P4", "position": [5, 2, 1], "orientation": "whl", "size": [2, 2, 1]},
+          {"id": "P6", "position": [5, 0, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P10", "position": [0, 0, 0], "orientation": "wlh", "size": [2, 1, 3]},
+          {"id": "P12", "position": [2, 0, 0], "orientation": "hlw", "size": [3, 5, 3]},
+          {"id": "P14", "position": [0, 3, 4], "orientation": "lwh", "size": [5, 3, 1]},
+          {"id": "P17", "position": [5, 3, 0], "orientation": "hlw", "size": [2, 3, 1]},
+          {"id": "P20", "position": [2, 5, 0], "orientation": "whl", "size": [3, 1, 4]},
+          {"id": "P21", "position": [7, 0, 0], "orientation": "hlw", "size": [1, 3, 1]},
+          {"id": "P22", "position": [7, 0, 1], "orientation": "hlw", "size": [1, 5, 4]},
+          {"id": "P30", "position": [2, 1, 3], "orientation": "wlh", "size": [2, 2, 2]}
+        ]
+      }
+    ],
+    "outside": ["P5", "P7", "P8", "P9", "P11", "P13", "P15", "P16", "P18", "P19", "P23", "P24", "P25", "P26", "P27", "P28", "P29", "P31", "P32", "P33", "P34", "P35", "P36"]
+  },
+  "history": [645, 645, 645, 645, 645, 645, 645, 645, 645, 645, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 690, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695, 695],
+  "iterations": 50,
+  "duration": 1.6225221157073975,
+  "history_avg": [455.275, 416.8, 406.05, 401.825, 408.175, 421.0, 415.15, 434.5, 445.0, 440.575, 443.475, 433.5, 434.325, 437.05, 431.125, 425.275, 430.775, 443.75, 441.075, 438.575, 456.25, 466.475, 462.2, 473.575, 477.025, 476.125, 478.6, 474.65, 481.0, 480.55, 475.575, 469.25, 473.825, 492.1, 499.125, 505.2, 509.725, 508.0, 492.9, 492.975, 496.8, 500.1, 507.35, 504.425, 506.225, 516.675, 519.625, 520.925, 524.475, 528.6, 522.55]
+}

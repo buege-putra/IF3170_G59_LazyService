@@ -1,0 +1,66 @@
+{
+  "parameters": {"population_size": 100, "num_iterations": 50, "mutation_rate": 0.1, "elite_count": 2, "reinsert": true},
+  "initial_state": {
+    "value": 610,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 233,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P2", "position": [0, 0, 0], "orientation": "wlh", "size": [1, 5, 2]},
+          {"id": "P3", "position": [6, 0, 2], "orientation": "hlw", "size": [2, 5, 3]},
+          {"id": "P4", "position": [3, 4, 0], "orientation": "hlw", "size": [2, 1, 2]},
+          {"id": "P6", "position": [1, 4, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P7", "position": [1, 1, 0], "orientation": "lhw", "size": [2, 1, 4]},
+          {"id": "P8", "position": [1, 2, 4], "orientation": "lhw", "size": [3, 2, 1]},
+          {"id": "P9", "position": [6, 2, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P13", "position": [3, 5, 0], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P15", "position": [4, 1, 3], "orientation": "hwl", "size": [2, 4, 2]},
+          {"id": "P19", "position": [7, 0, 0], "orientation": "wlh", "size": [1, 2, 2]},
+          {"id": "P23", "position": [4, 0, 0], "orientation": "hwl", "size": [2, 3, 3]},
+          {"id": "P25", "position": [0, 0, 2], "orientation": "wlh", "size": [1, 4, 3]},
+          {"id": "P29", "position": [4, 5, 2], "orientation": "lhw", "size": [4, 1, 3]},
+          {"id": "P30", "position": [6, 4, 0], "orientation": "lhw", "size": [2, 2, 2]},
+          {"id": "P31", "position": [1, 2, 0], "orientation": "lhw", "size": [3, 2, 4]},
+          {"id": "P32", "position": [0, 4, 2], "orientation": "whl", "size": [4, 2, 3]}
+        ]
+      }
+    ],
+    "outside": ["P1", "P5", "P10", "P11", "P12", "P14", "P16", "P17", "P18", "P20", "P21", "P22", "P24", "P26", "P27", "P28", "P33", "P34", "P35", "P36"]
+  },
+  "final_state": {
+    "value": 690,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 246,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P2", "position": [4, 0, 3], "orientation": "wlh", "size": [1, 5, 2]},
+          {"id": "P3", "position": [5, 0, 2], "orientation": "hlw", "size": [2, 5, 3]},
+          {"id": "P4", "position": [0, 0, 0], "orientation": "hlw", "size": [2, 1, 2]},
+          {"id": "P6", "position": [5, 0, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P7", "position": [0, 1, 0], "orientation": "lhw", "size": [2, 1, 4]},
+          {"id": "P8", "position": [0, 3, 3], "orientation": "lhw", "size": [3, 2, 1]},
+          {"id": "P9", "position": [5, 3, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P10", "position": [2, 0, 0], "orientation": "hlw", "size": [3, 1, 2]},
+          {"id": "P12", "position": [0, 3, 0], "orientation": "lhw", "size": [5, 3, 3]},
+          {"id": "P13", "position": [2, 1, 0], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P19", "position": [5, 2, 0], "orientation": "lwh", "size": [2, 1, 2]},
+          {"id": "P21", "position": [4, 2, 0], "orientation": "hwl", "size": [1, 1, 3]},
+          {"id": "P22", "position": [7, 0, 0], "orientation": "hlw", "size": [1, 5, 4]},
+          {"id": "P26", "position": [2, 2, 0], "orientation": "hwl", "size": [2, 1, 4]},
+          {"id": "P27", "position": [6, 5, 0], "orientation": "hwl", "size": [2, 1, 5]},
+          {"id": "P29", "position": [0, 0, 2], "orientation": "lhw", "size": [4, 1, 3]},
+          {"id": "P35", "position": [0, 5, 3], "orientation": "lhw", "size": [4, 1, 2]}
+        ]
+      }
+    ],
+    "outside": ["P1", "P5", "P11", "P14", "P15", "P16", "P17", "P18", "P20", "P23", "P24", "P25", "P28", "P30", "P31", "P32", "P33", "P34", "P36"]
+  },
+  "history": [610, 610, 610, 610, 610, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 630, 645, 645, 645, 645, 645, 645, 645, 645, 645, 650, 650, 650, 660, 690, 690, 690, 690],
+  "iterations": 50,
+  "duration": 0.9635748863220215,
+  "history_avg": [459.05, 439.0, 423.6, 418.25, 407.3, 388.85, 393.55, 387.75, 391.35, 405.2, 411.95, 415.85, 404.9, 400.7, 417.45, 410.65, 435.85, 436.35, 427.95, 423.4, 423.35, 428.45, 437.1, 439.9, 433.4, 429.15, 426.7, 430.35, 427.05, 430.85, 431.1, 437.85, 450.55, 447.4, 449.45, 458.45, 457.8, 455.25, 457.75, 463.75, 476.35, 477.85, 469.1, 477.6, 471.25, 477.45, 472.15, 476.1, 464.15, 485.7, 484.15]
+}
