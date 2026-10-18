@@ -2,6 +2,8 @@
 
 Kelompok G59: LazyService
 
+Buka laporan lengkap disini: https://docs.google.com/document/d/1VKHKJmA1G6BkhgAVuTR5mnTHwH1mBS7mWWuiv9UqZRQ/edit?tab=t.riwja32n1khd
+
 Program untuk mencari konfigurasi pengisian paket ke dalam peti kemas truk dengan memaksimalkan total _value_ paket yang diangkut, menggunakan algoritma _local search_. Setiap state harus memenuhi constraint berikut:
 
 - paket tidak boleh menembus dinding peti kemas atau saling bertabrakan,
