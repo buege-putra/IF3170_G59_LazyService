@@ -23,6 +23,13 @@ Algoritma yang diimplementasikan:
 
 Mendukung lebih dari satu truk (bonus multi-truk). Jumlah truk ditentukan di file input.
 
+## Objective Function
+
+Objective dipilih lewat menu parameter (`1b`, ditekan untuk berganti pilihan):
+
+- `value` (default): total _value_ paket di dalam truk.
+- `lifo` (bonus): total _value_ dikurangi penalti paket yang menghalangi paket lain yang harus diturunkan lebih dahulu (ETA lebih kecil).
+
 ## Struktur Repository
 
 ```
