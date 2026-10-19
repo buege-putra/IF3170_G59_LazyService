@@ -101,14 +101,25 @@ class RandomRestartHC(HillClimbing):
             history.extend(result.history)
 
         iterations_per_restart = [result.iterations for result in restart_results]
-        return SearchResult(restart_results[0].initial_state, best.final_state, history,
-                            iterations=sum(iterations_per_restart),
-                            info={"restarts": self.max_restarts, "iterations_per_restart": iterations_per_restart})
+        return SearchResult(
+            restart_results[0].initial_state,
+            best.final_state,
+            history,
+            iterations=sum(iterations_per_restart),
+            info={
+                "restarts": self.max_restarts,
+                "iterations_per_restart": iterations_per_restart,
+            },
+        )
 
     def metrics(self, result: SearchResult) -> dict[str, Any]:
         iterations_per_restart = result.info["iterations_per_restart"]
-        return {"Restart": result.info["restarts"],
-                "Iterasi per restart": ", ".join(str(iterations) for iterations in iterations_per_restart)}
+        return {
+            "Restart": result.info["restarts"],
+            "Iterasi per restart": ", ".join(
+                str(iterations) for iterations in iterations_per_restart
+            ),
+        }
 
 
 class StochasticHC(HillClimbing):
@@ -133,4 +144,6 @@ class StochasticHC(HillClimbing):
                 state = neighbor
             history.append(state.objective())
 
-        return SearchResult(initial_state, state, history, iterations=self.max_iterations)
+        return SearchResult(
+            initial_state, state, history, iterations=self.max_iterations
+        )

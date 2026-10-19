@@ -20,8 +20,14 @@ class SearchResult:
     info: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"initial_state": self.initial_state, "final_state": self.final_state, "history": self.history,
-                "iterations": self.iterations, "duration": self.duration, **self.info}
+        return {
+            "initial_state": self.initial_state,
+            "final_state": self.final_state,
+            "history": self.history,
+            "iterations": self.iterations,
+            "duration": self.duration,
+            **self.info,
+        }
 
 
 class LocalSearch:

@@ -15,8 +15,12 @@ def get_field(data: Any, key: str, expected_type: type, context: str) -> Any:
         raise ValueError(f"{context}: atribut '{key}' tidak ada")
     value = data[key]
     # bool turunan int, harus ditolak manual untuk atribut bilangan
-    if not isinstance(value, expected_type) or (expected_type is not bool and isinstance(value, bool)):
-        raise ValueError(f"{context}: atribut '{key}' harus bertipe {expected_type.__name__}")
+    if not isinstance(value, expected_type) or (
+        expected_type is not bool and isinstance(value, bool)
+    ):
+        raise ValueError(
+            f"{context}: atribut '{key}' harus bertipe {expected_type.__name__}"
+        )
     return value
 
 
@@ -40,19 +44,27 @@ def load_input(path: str | Path) -> Problem:
     trucks = []
     for index, truck in enumerate(get_field(data, "trucks", list, "input")):
         context = f"trucks[{index}]"
-        trucks.append(Truck(id=get_field(truck, "id", str, context),
-                            dimensions=get_dimensions(truck, context),
-                            max_capacity=get_field(truck, "max_capacity", int, context)))
+        trucks.append(
+            Truck(
+                id=get_field(truck, "id", str, context),
+                dimensions=get_dimensions(truck, context),
+                max_capacity=get_field(truck, "max_capacity", int, context),
+            )
+        )
 
     package_list = []
     for index, package in enumerate(get_field(data, "packages", list, "input")):
         context = f"packages[{index}]"
-        package_list.append(Package(id=get_field(package, "id", str, context),
-                                    dimensions=get_dimensions(package, context),
-                                    value=get_field(package, "value", int, context),
-                                    weight=get_field(package, "weight", int, context),
-                                    is_fragile=get_field(package, "is_fragile", bool, context),
-                                    eta=get_field(package, "eta", int, context)))
+        package_list.append(
+            Package(
+                id=get_field(package, "id", str, context),
+                dimensions=get_dimensions(package, context),
+                value=get_field(package, "value", int, context),
+                weight=get_field(package, "weight", int, context),
+                is_fragile=get_field(package, "is_fragile", bool, context),
+                eta=get_field(package, "eta", int, context),
+            )
+        )
 
     if len(trucks) == 0:
         raise ValueError("minimal harus ada 1 truk")
@@ -65,7 +77,10 @@ def load_input(path: str | Path) -> Problem:
     # Move swap butuh minimal dua paket
     if len(package_list) < 2:
         raise ValueError("minimal harus ada 2 paket")
-    for name, ids in (("truk", [truck.id for truck in trucks]), ("paket", [package.id for package in package_list])):
+    for name, ids in (
+        ("truk", [truck.id for truck in trucks]),
+        ("paket", [package.id for package in package_list]),
+    ):
         if len(ids) != len(set(ids)):
             raise ValueError(f"id {name} harus unik")
 

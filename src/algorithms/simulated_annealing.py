@@ -12,7 +12,9 @@ from core.state import State
 class SimulatedAnnealing(LocalSearch):
     name = "Simulated Annealing"
 
-    def __init__(self, problem: Problem, T0: float, alpha: float, T_min: float, stuck_limit: int) -> None:
+    def __init__(
+        self, problem: Problem, T0: float, alpha: float, T_min: float, stuck_limit: int
+    ) -> None:
         super().__init__(problem)
         self.T0 = T0
         self.alpha = alpha
@@ -20,7 +22,12 @@ class SimulatedAnnealing(LocalSearch):
         self.stuck_limit = stuck_limit
 
     def parameter(self) -> dict[str, Any]:
-        return {"T0": self.T0, "alpha": self.alpha, "T_min": self.T_min, "stuck_limit": self.stuck_limit}
+        return {
+            "T0": self.T0,
+            "alpha": self.alpha,
+            "T_min": self.T_min,
+            "stuck_limit": self.stuck_limit,
+        }
 
     def search(self) -> SearchResult:
         # Temperatur turun geometrik T_{t+1} = alpha * T_t, berhenti pas T < T_min
@@ -28,7 +35,8 @@ class SimulatedAnnealing(LocalSearch):
         state = initial_state
         T = self.T0
         history = [state.objective()]
-        history_prob: list[float] = []   # e^(delta_E/T) untuk neighbor yg lebih jelek, NaN untuk sisanya
+        # e^(ΔE/T) untuk neighbor yg lebih jelek, NaN untuk sisanya
+        history_prob: list[float] = []
         stuck_count = 0
         unchanged_iterations = 0
 
@@ -60,8 +68,13 @@ class SimulatedAnnealing(LocalSearch):
             history.append(state.objective())
             T = self.alpha * T
 
-        return SearchResult(initial_state, state, history, iterations=len(history) - 1,
-                            info={"stuck": stuck_count, "history_prob": history_prob})
+        return SearchResult(
+            initial_state,
+            state,
+            history,
+            iterations=len(history) - 1,
+            info={"stuck": stuck_count, "history_prob": history_prob},
+        )
 
     def metrics(self, result: SearchResult) -> dict[str, Any]:
         return {"Iterasi": result.iterations, "Stuck": result.info["stuck"]}

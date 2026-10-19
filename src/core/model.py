@@ -10,7 +10,9 @@ Position = tuple[int, int, int]
 # (x, y, z, dx, dy, dz) isinya posisi sudut kiri-bawah-belakang sama ukuran paket setelah orientasinya diapply
 Box = tuple[int, int, int, int, int, int]
 
-ALL_ORIENTATIONS: list[Orientation] = [(a, b, c) for a, b, c in permutations(("w", "l", "h"))]
+ALL_ORIENTATIONS: list[Orientation] = [
+    (a, b, c) for a, b, c in permutations(("w", "l", "h"))
+]
 
 
 def rotate_90(orientation: Orientation, axis: str) -> Orientation:
@@ -24,10 +26,17 @@ def rotate_90(orientation: Orientation, axis: str) -> Orientation:
 
 
 class Package:
-    def __init__(self, id: str, dimensions: Dimensions, value: int, weight: int, is_fragile: bool,
-                 eta: int) -> None:
+    def __init__(
+        self,
+        id: str,
+        dimensions: Dimensions,
+        value: int,
+        weight: int,
+        is_fragile: bool,
+        eta: int,
+    ) -> None:
         self.id = id
-        self.dimensions = dimensions   # (w, l, h)
+        self.dimensions = dimensions  # (w, l, h)
         self.value = value
         self.weight = weight
         self.is_fragile = is_fragile
@@ -37,13 +46,17 @@ class Package:
         # Panjang paket di sumbu x, y, z untuk orientasi tertentu
         w, l, h = self.dimensions
         side_lengths = {"w": w, "l": l, "h": h}
-        return side_lengths[orientation[0]], side_lengths[orientation[1]], side_lengths[orientation[2]]
+        return (
+            side_lengths[orientation[0]],
+            side_lengths[orientation[1]],
+            side_lengths[orientation[2]],
+        )
 
 
 class Truck:
     def __init__(self, id: str, dimensions: Dimensions, max_capacity: int) -> None:
         self.id = id
-        self.dimensions = dimensions   # (W, L, H)
+        self.dimensions = dimensions  # (W, L, H)
         self.max_capacity = max_capacity
 
     @property

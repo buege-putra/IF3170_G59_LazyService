@@ -13,12 +13,16 @@ class Problem:
     def __init__(self, trucks: list[Truck], package_list: list[Package]) -> None:
         self.trucks = trucks
         self.package_list = package_list
-        self.packages: dict[str, Package] = {package.id: package for package in package_list}
+        self.packages: dict[str, Package] = {
+            package.id: package for package in package_list
+        }
         etas = [package.eta for package in package_list]
         self.eta_range = max(etas) - min(etas)
         self.configure_objective("value", 10.0, False)
 
-    def configure_objective(self, objective: str, penalty_weight: float, tie_breaker: bool) -> None:
+    def configure_objective(
+        self, objective: str, penalty_weight: float, tie_breaker: bool
+    ) -> None:
         # objective "value" = total value
         # objective "lifo" = total value - penalty
         # penalty_scale ngubah raw penalty (jumlah selisih ETA) jadi pengurang objective
@@ -41,7 +45,9 @@ class Problem:
         # Susunan paket, support, fragile, sama pembagian paket ke tiap truk diignore,
         # jadi hasilnya cuma batas atas global optimum, belum tentu bisa dicapai.
         capacity = sum(truck.max_capacity for truck in self.trucks)
-        truck_volume = sum(W * L * H for W, L, H in (truck.dimensions for truck in self.trucks))
+        truck_volume = sum(
+            W * L * H for W, L, H in (truck.dimensions for truck in self.trucks)
+        )
 
         # max_value[batas_berat, batas_volume] = value max dgn total berat sama volume gak lebih dari batasnya
         max_value = np.zeros((capacity + 1, truck_volume + 1), dtype=np.int64)
@@ -51,7 +57,9 @@ class Problem:
             if package.weight > capacity or volume > truck_volume:
                 continue
             # Ruas kanan dihitung full dari tabel lama sblm ditulis, jadi tiap paket kepake maks sekali
-            max_value[package.weight:, volume:] = np.maximum(
-                max_value[package.weight:, volume:],
-                max_value[:capacity + 1 - package.weight, :truck_volume + 1 - volume] + package.value)
+            max_value[package.weight :, volume:] = np.maximum(
+                max_value[package.weight :, volume:],
+                max_value[: capacity + 1 - package.weight, : truck_volume + 1 - volume]
+                + package.value,
+            )
         return int(max_value[capacity, truck_volume])

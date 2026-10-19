@@ -30,11 +30,13 @@ class OccupancyGrid:
 
     def fill(self, box: Box, is_fragile: bool) -> None:
         x, y, z, dx, dy, dz = box
-        self.occupied[x:x + dx, y:y + dy, z:z + dz] = 1
+        self.occupied[x : x + dx, y : y + dy, z : z + dz] = 1
         if is_fragile:
-            self.fragile_cells[x:x + dx, y:y + dy, z:z + dz] = 1
+            self.fragile_cells[x : x + dx, y : y + dy, z : z + dz] = 1
 
-    def lowest_position(self, dx: int, dy: int, dz: int, is_fragile: bool) -> Position | None:
+    def lowest_position(
+        self, dx: int, dy: int, dz: int, is_fragile: bool
+    ) -> Position | None:
         # Posisi valid pertama dgn urutan (z, x, y), sama kayak urutan candidate_positions,
         # atau None kalo gak ada.
         # Constraint yg dicek sama dgn valid_after_change untuk paket yg baru dimasukin.
@@ -42,7 +44,9 @@ class OccupancyGrid:
         if dx > W or dy > L or dz > H:
             return None
         for z in range(H - dz + 1):
-            valid = window_sums(self.occupied[:, :, z:z + dz].sum(axis=2), dx, dy) == 0
+            valid = (
+                window_sums(self.occupied[:, :, z : z + dz].sum(axis=2), dx, dy) == 0
+            )
             if z > 0:
                 # Karena gak ada tabrakan, sel terisi pas di bawah alas pasti punya paket yg bagian atasnya di z
                 valid &= window_sums(self.occupied[:, :, z - 1], dx, dy) > 0

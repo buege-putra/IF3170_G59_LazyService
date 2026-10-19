@@ -17,8 +17,15 @@ class GeneticAlgorithm(LocalSearch):
     name = "Genetic Algorithm"
     iteration_label = "Iterasi (generasi)"
 
-    def __init__(self, problem: Problem, population_size: int, num_iterations: int, mutation_rate: float,
-                 elite_count: int, reinsert: bool = True) -> None:
+    def __init__(
+        self,
+        problem: Problem,
+        population_size: int,
+        num_iterations: int,
+        mutation_rate: float,
+        elite_count: int,
+        reinsert: bool = True,
+    ) -> None:
         super().__init__(problem)
         self.population_size = population_size
         self.num_iterations = num_iterations
@@ -27,8 +34,13 @@ class GeneticAlgorithm(LocalSearch):
         self.reinsert = reinsert
 
     def parameter(self) -> dict[str, Any]:
-        return {"population_size": self.population_size, "num_iterations": self.num_iterations,
-                "mutation_rate": self.mutation_rate, "elite_count": self.elite_count, "reinsert": self.reinsert}
+        return {
+            "population_size": self.population_size,
+            "num_iterations": self.num_iterations,
+            "mutation_rate": self.mutation_rate,
+            "elite_count": self.elite_count,
+            "reinsert": self.reinsert,
+        }
 
     def metrics(self, result: SearchResult) -> dict[str, Any]:
         return {"Populasi": self.population_size, "Iterasi": self.num_iterations}
@@ -37,7 +49,13 @@ class GeneticAlgorithm(LocalSearch):
     def to_chromosome(state: State) -> list[Gene]:
         chromosome = []
         for package_id in state.packages:
-            chromosome.append((state.truck_of[package_id], state.positions[package_id], state.orientations[package_id]))
+            chromosome.append(
+                (
+                    state.truck_of[package_id],
+                    state.positions[package_id],
+                    state.orientations[package_id],
+                )
+            )
         return chromosome
 
     def from_chromosome(self, chromosome: list[Gene]) -> State:
@@ -68,14 +86,22 @@ class GeneticAlgorithm(LocalSearch):
     def reinsert_dropped(state: State, package_ids: list[str]) -> None:
         # Heuristik repair, paket yg kebuang dimasukkan lagi (orientasi tetap) ke posisi valid terendah
         # (urutan z, x, y) di truk pertama yg masih muat
-        grids = [OccupancyGrid(state, truck_index) for truck_index in range(len(state.trucks))]
+        grids = [
+            OccupancyGrid(state, truck_index)
+            for truck_index in range(len(state.trucks))
+        ]
         for package_id in package_ids:
             package = state.packages[package_id]
             dx, dy, dz = package.oriented_dimensions(state.orientations[package_id])
             for truck_index, truck in enumerate(state.trucks):
-                if state.total_weight(truck_index) + package.weight > truck.max_capacity:
+                if (
+                    state.total_weight(truck_index) + package.weight
+                    > truck.max_capacity
+                ):
                     continue
-                position = grids[truck_index].lowest_position(dx, dy, dz, package.is_fragile)
+                position = grids[truck_index].lowest_position(
+                    dx, dy, dz, package.is_fragile
+                )
                 if position is not None:
                     state.place(package_id, truck_index, position)
                     grids[truck_index].fill(state.box(package_id), package.is_fragile)
@@ -101,7 +127,9 @@ class GeneticAlgorithm(LocalSearch):
         return self.from_chromosome(child_genes)
 
     def search(self) -> SearchResult:
-        population = [State.random_initial(self.problem) for _ in range(self.population_size)]
+        population = [
+            State.random_initial(self.problem) for _ in range(self.population_size)
+        ]
         initial_state = max(population, key=State.objective)
 
         history_max = []
@@ -115,8 +143,12 @@ class GeneticAlgorithm(LocalSearch):
                 break
 
             # Elitisme, individu terbaik langsung dibawa ke generasi berikutnya
-            order = sorted(range(self.population_size), key=lambda index: fitness[index], reverse=True)
-            new_population = [population[index] for index in order[:self.elite_count]]
+            order = sorted(
+                range(self.population_size),
+                key=lambda index: fitness[index],
+                reverse=True,
+            )
+            new_population = [population[index] for index in order[: self.elite_count]]
 
             while len(new_population) < self.population_size:
                 parent_1 = self.select(population, fitness)
@@ -127,5 +159,10 @@ class GeneticAlgorithm(LocalSearch):
                 new_population.append(child)
             population = new_population
 
-        return SearchResult(initial_state, max(population, key=State.objective), history_max,
-                            iterations=self.num_iterations, info={"history_avg": history_avg})
+        return SearchResult(
+            initial_state,
+            max(population, key=State.objective),
+            history_max,
+            iterations=self.num_iterations,
+            info={"history_avg": history_avg},
+        )

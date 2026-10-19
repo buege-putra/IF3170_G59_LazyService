@@ -49,8 +49,10 @@ def format_json(value: Any, depth: int = 0) -> str:
     if isinstance(value, dict):
         if all(fits_one_line(item) for item in value.values()):
             return json.dumps(value, ensure_ascii=False)
-        parts = [f"{indent}{json.dumps(key, ensure_ascii=False)}: {format_json(item, depth + 1)}"
-                 for key, item in value.items()]
+        parts = [
+            f"{indent}{json.dumps(key, ensure_ascii=False)}: {format_json(item, depth + 1)}"
+            for key, item in value.items()
+        ]
         return "{\n" + ",\n".join(parts) + f"\n{closing_indent}}}"
     if isinstance(value, list):
         if all(is_scalar(item) for item in value):
@@ -72,12 +74,29 @@ def save_figure(fig: Figure, folder: Path, file_name: str) -> None:
     plt.close(fig)
 
 
-def save_run(folder: Path, file_name: str, title: str, algorithm: LocalSearch, result: SearchResult) -> None:
+def save_run(
+    folder: Path,
+    file_name: str,
+    title: str,
+    algorithm: LocalSearch,
+    result: SearchResult,
+) -> None:
     # Gambar state awal/akhir sama data lengkap satu run
-    save_figure(plot.draw_initial_final(result.initial_state, result.final_state, title), folder, f"{file_name}.png")
-    save_json(folder, f"{file_name}.json", {"parameters": algorithm.parameter(), **result.to_dict()})
+    save_figure(
+        plot.draw_initial_final(result.initial_state, result.final_state, title),
+        folder,
+        f"{file_name}.png",
+    )
+    save_json(
+        folder,
+        f"{file_name}.json",
+        {"parameters": algorithm.parameter(), **result.to_dict()},
+    )
 
 
 def save_summary(experiment_result: ExperimentResult) -> None:
-    save_figure(plot.draw_summary(experiment_result.plot, experiment_result.title),
-                experiment_result.folder, "plot.png")
+    save_figure(
+        plot.draw_summary(experiment_result.plot, experiment_result.title),
+        experiment_result.folder,
+        "plot.png",
+    )
