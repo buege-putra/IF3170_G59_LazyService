@@ -329,11 +329,11 @@ class Viewer:
         metrics = ", ".join(f"{name} = {value}" for name, value in run.metrics.items())
         initial, final = run.initial_state, run.final_state
         change = f"{objective_name(final)} {initial.objective_text()} → {final.objective_text()}"
+        penalty = f"penalti {initial.normalized_penalty():.2f} → {final.normalized_penalty():.2f}"
         if final.problem.objective == "lifo":
-            change += (
-                f" (value {initial.value} → {final.value}, "
-                f"penalti {initial.normalized_penalty():.2f} → {final.normalized_penalty():.2f})"
-            )
+            change += f" (value {initial.value} → {final.value}, {penalty})"
+        elif final.problem.penalty_shown:
+            change += f" ({penalty})"
         self.fig.suptitle(
             f"{title}\n{run.label} ({self.run_index + 1}/{len(result.runs)}): {change}, {metrics}"
         )

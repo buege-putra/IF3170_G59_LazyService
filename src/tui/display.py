@@ -157,8 +157,12 @@ def result_summary(result: ExperimentResult, upper_bound: int) -> str:
             )
         )
 
-    lifo = result.runs[0].final_state.problem.objective == "lifo"
+    problem = result.runs[0].final_state.problem
+    lifo = problem.objective == "lifo"
+    value_penalty = not lifo and problem.penalty_shown
     header = ["Run", "Value awal", "Value akhir"]
+    if value_penalty:
+        header.append("Penalti akhir")
     if lifo:
         header = [
             "Run",
@@ -176,10 +180,9 @@ def result_summary(result: ExperimentResult, upper_bound: int) -> str:
             run.final_state.objective_text(),
         ]
         if lifo:
-            row += [
-                run.final_state.value,
-                f"{run.final_state.normalized_penalty():.2f}",
-            ]
+            row.append(run.final_state.value)
+        if problem.penalty_shown:
+            row.append(f"{run.final_state.normalized_penalty():.2f}")
         rows.append(row + list(run.metrics.values()))
     lines.append(table(header, rows, ["<"] + [">"] * (len(header) - 1)))
 

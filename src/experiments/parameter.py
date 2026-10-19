@@ -120,6 +120,13 @@ PARAMETER_DEFINITIONS: list[tuple[str, list[ParameterDefinition]]] = [
                 False,
                 None,
             ),
+            ParameterDefinition(
+                "1e",
+                "show_penalty",
+                "Value: tampilkan penalti LIFO (tidak memengaruhi pencarian)",
+                False,
+                None,
+            ),
         ],
     ),
     (
@@ -207,6 +214,7 @@ class Parameter:
     objective: str
     penalty_weight: float
     tie_breaker: bool
+    show_penalty: bool
     max_sideways: int
     max_restarts: int
     max_iterations: int

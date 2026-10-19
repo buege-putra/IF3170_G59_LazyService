@@ -174,7 +174,23 @@ class State:
     def normalized_penalty(self) -> float:
         if self.problem.eta_range == 0:
             return 0.0
-        return self.penalty / self.problem.eta_range
+        return self.raw_penalty() / self.problem.eta_range
+
+    def raw_penalty(self) -> int:
+        # Cache cuma diupdate di objective lifo, selain itu dihitung langsung
+        if self.problem.objective == "lifo":
+            return self.penalty
+        total = 0
+        for truck_index, truck in enumerate(self.trucks):
+            for id_1, id_2 in combinations(self.inside(truck_index), 2):
+                total += self.pair_penalty(
+                    self.box(id_1),
+                    self.packages[id_1].eta,
+                    self.box(id_2),
+                    self.packages[id_2].eta,
+                    truck.door_on_x,
+                )
+        return total
 
     @staticmethod
     def pair_penalty(
@@ -224,6 +240,10 @@ class State:
 
     def objective_label(self) -> str:
         if self.problem.objective == "value":
+            if self.problem.penalty_shown:
+                return (
+                    f"value = {self.value}, penalti = {self.normalized_penalty():.2f}"
+                )
             return f"value = {self.value}"
         return f"objective = {self.objective_text()}, value = {self.value}, penalti = {self.normalized_penalty():.2f}"
 

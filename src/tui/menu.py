@@ -275,7 +275,8 @@ def run_experiments(status: TuiState, methods: list[str]) -> None:
 
 def objective_description(parameter: Parameter) -> str:
     if parameter.objective == "value":
-        return "value (total value paket di dalam truk)"
+        shown = ", penalti LIFO ditampilkan" if parameter.show_penalty else ""
+        return f"value (total value paket di dalam truk{shown})"
     penalty = (
         "tie-breaker"
         if parameter.tie_breaker

@@ -99,7 +99,9 @@ class Experiment:
         # Jalanin algoritma sebanyak n_runs kali.
         # configuration sama file_prefix buat ngebedain run antar-konfigurasi GA dlm satu eksperimen.
         p = self.parameter
-        self.problem.configure_objective(p.objective, p.penalty_weight, p.tie_breaker)
+        self.problem.configure_objective(
+            p.objective, p.penalty_weight, p.tie_breaker, p.show_penalty
+        )
         entries = []
         # Seed tiap run diturunkan dari seed global biar hasil tetap reproducible
         seeds = [random.getrandbits(32) for _ in range(self.parameter.n_runs)]

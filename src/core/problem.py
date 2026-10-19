@@ -21,7 +21,11 @@ class Problem:
         self.configure_objective("value", 10.0, False)
 
     def configure_objective(
-        self, objective: str, penalty_weight: float, tie_breaker: bool
+        self,
+        objective: str,
+        penalty_weight: float,
+        tie_breaker: bool,
+        show_penalty: bool = False,
     ) -> None:
         # objective "value" = total value
         # objective "lifo" = total value - penalty
@@ -29,6 +33,8 @@ class Problem:
         self.objective = objective
         self.penalty_weight = penalty_weight
         self.tie_breaker = tie_breaker
+        # Penalti selalu ditampilkan di objective lifo, di objective value cuma kalo diminta
+        self.penalty_shown = objective == "lifo" or show_penalty
         if objective == "value" or self.eta_range == 0:
             self.penalty_scale = 0.0
         elif tie_breaker:
