@@ -118,6 +118,11 @@ def add_package_legend(fig: Figure, problem: Problem, **position: Any) -> None:
     fig.legend(handles=handles, fontsize=9, **position)
 
 
+def title_with_setting(title: str, problem: Problem) -> str:
+    setting = problem.objective_setting()
+    return f"{title}\n{setting}" if setting else title
+
+
 def draw_initial_final(initial_state: State, final_state: State, title: str) -> Figure:
     # Kolom kiri state awal, kolom kanan state akhir, satu baris per truk
     num_trucks = len(initial_state.trucks)
@@ -133,7 +138,7 @@ def draw_initial_final(initial_state: State, final_state: State, title: str) -> 
                 ),
             )
             draw_truck(ax, state, truck_index, f"{name}\n{state.objective_label()}")
-    fig.suptitle(title)
+    fig.suptitle(title_with_setting(title, initial_state.problem))
     fig.tight_layout(rect=(0, 0.05 / num_trucks, 1, 1))
     add_package_legend(fig, initial_state.problem, loc="lower center", ncol=5)
     return fig
@@ -213,11 +218,11 @@ def draw_ga(
     ax.grid(alpha=0.3)
 
 
-def draw_summary(plots: list[PlotFn], title: str) -> Figure:
+def draw_summary(plots: list[PlotFn], title: str, problem: Problem) -> Figure:
     fig, axes = plt.subplots(1, len(plots), figsize=(6 * len(plots), 4), squeeze=False)
     for ax, plot_fn in zip(axes[0], plots):
         plot_fn(ax, None)
-    fig.suptitle(title)
+    fig.suptitle(title_with_setting(title, problem))
     fig.tight_layout()
     return fig
 
@@ -324,6 +329,9 @@ class Viewer:
             self.axes_plot.append(ax_plot)
 
         title = result.title
+        setting = run.final_state.problem.objective_setting()
+        if setting:
+            title += f" ({setting})"
         if len(self.results) > 1:
             title = f"[{self.result_index + 1}/{len(self.results)}] {title}"
         metrics = ", ".join(f"{name} = {value}" for name, value in run.metrics.items())

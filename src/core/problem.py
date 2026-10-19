@@ -45,6 +45,14 @@ class Problem:
         else:
             self.penalty_scale = penalty_weight / self.eta_range
 
+    def objective_setting(self) -> str:
+        # Parameter objective lifo yg ditampilkan di judul gambar
+        if self.objective == "value":
+            return ""
+        if self.tie_breaker:
+            return "objective lifo, tie-breaker"
+        return f"objective lifo, lambda = {self.penalty_weight}"
+
     @cached_property
     def upper_bound(self) -> int:
         # Knapsack 0/1 dgn dua batasan (total berat sama total volume) terhadap gabungan semua truk.

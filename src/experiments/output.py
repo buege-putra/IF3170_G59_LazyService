@@ -96,7 +96,11 @@ def save_run(
 
 def save_summary(experiment_result: ExperimentResult) -> None:
     save_figure(
-        plot.draw_summary(experiment_result.plot, experiment_result.title),
+        plot.draw_summary(
+            experiment_result.plot,
+            experiment_result.title,
+            experiment_result.runs[0].initial_state.problem,
+        ),
         experiment_result.folder,
         "plot.png",
     )
