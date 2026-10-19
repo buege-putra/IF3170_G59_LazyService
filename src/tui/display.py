@@ -51,71 +51,156 @@ def section_heading(text: str) -> str:
     return f"\n  {accent(text)}"
 
 
-def table(header: list[str], rows: list[list[Any]], alignments: list[str] | None = None, indent: str = "  ") -> str:
+def table(
+    header: list[str],
+    rows: list[list[Any]],
+    alignments: list[str] | None = None,
+    indent: str = "  ",
+) -> str:
     text_rows = [[str(cell) for cell in row] for row in rows]
     alignments = alignments or ["<"] * len(header)
     widths = [max(len(cell) for cell in column) for column in zip(header, *text_rows)]
 
     def border_line(left: str, middle: str, right: str) -> str:
-        return indent + left + middle.join("─" * (width + 2) for width in widths) + right
+        return (
+            indent + left + middle.join("─" * (width + 2) for width in widths) + right
+        )
 
     def format_row(cells: list[str], is_header: bool = False) -> str:
-        texts = [f" {cell:{direction}{width}} " for cell, direction, width in zip(cells, alignments, widths)]
+        texts = [
+            f" {cell:{direction}{width}} "
+            for cell, direction, width in zip(cells, alignments, widths)
+        ]
         if is_header:
             texts = [bold(text) for text in texts]
         return indent + "│" + "│".join(texts) + "│"
 
-    lines = [border_line("┌", "┬", "┐"), format_row(header, True), border_line("├", "┼", "┤")]
+    lines = [
+        border_line("┌", "┬", "┐"),
+        format_row(header, True),
+        border_line("├", "┼", "┤"),
+    ]
     lines += [format_row(row) for row in text_rows]
     lines.append(border_line("└", "┴", "┘"))
     return "\n".join(lines)
 
 
 def state_table(state: State, name: str) -> str:
-    lines = [f"\n  {bold(name)}  {dim(f'value {state.objective()}')}"]
+    lifo = state.problem.objective == "lifo"
+    lines = [f"\n  {bold(name)}  {dim(state.objective_label())}"]
     for truck_index, truck in enumerate(state.trucks):
         packages_inside = state.inside(truck_index)
-        lines.append(f"  {truck.id}: berat {state.total_weight(truck_index)}/{truck.max_capacity}, "
-                     f"{len(packages_inside)} paket")
+        door = f"x = {truck.dimensions[0]}" if truck.door_on_x else "y = 0"
+        lines.append(
+            f"  {truck.id}: berat {state.total_weight(truck_index)}/{truck.max_capacity}, "
+            f"{len(packages_inside)} paket, pintu di {door}"
+        )
         if len(packages_inside) == 0:
             continue
         rows = []
         for package_id in packages_inside:
             package = state.packages[package_id]
             x, y, z, dx, dy, dz = state.box(package_id)
-            rows.append([package_id, f"({x}, {y}, {z})", f"{dx} x {dy} x {dz}",
-                         ", ".join(state.orientations[package_id]),
-                         package.value, package.weight, "ya" if package.is_fragile else ""])
-        lines.append(table(["Paket", "Posisi (x, y, z)", "Ukuran (x, y, z)", "Orientasi (x, y, z)",
-                            "Value", "Weight", "Fragile"],
-                           rows, ["<", "<", "<", "<", ">", ">", "<"]))
+            rows.append(
+                [
+                    package_id,
+                    f"({x}, {y}, {z})",
+                    f"{dx} x {dy} x {dz}",
+                    ", ".join(state.orientations[package_id]),
+                    package.value,
+                    package.weight,
+                    "ya" if package.is_fragile else "",
+                    package.eta,
+                ]
+            )
+        lines.append(
+            table(
+                [
+                    "Paket",
+                    "Posisi (x, y, z)",
+                    "Ukuran (x, y, z)",
+                    "Orientasi (x, y, z)",
+                    "Value",
+                    "Weight",
+                    "Fragile",
+                    "ETA",
+                ],
+                rows,
+                ["<", "<", "<", "<", ">", ">", "<", ">"],
+            )
+        )
+        if lifo:
+            violations = state.violations(truck_index)
+            text = ", ".join(
+                f"{blocker} menghalangi {blocked}" for blocked, blocker in violations
+            )
+            lines.append(
+                f"  Pelanggaran urutan bongkar ({len(violations)}): {text or 'tidak ada'}"
+            )
     outside = state.outside()
-    lines.append(f"  Di luar truk ({len(outside)}): {', '.join(outside) if outside else 'tidak ada'}")
+    lines.append(
+        f"  Di luar truk ({len(outside)}): {', '.join(outside) if outside else 'tidak ada'}"
+    )
     return "\n".join(lines)
 
 
 def result_summary(result: ExperimentResult, upper_bound: int) -> str:
     lines = [section_heading(result.title)]
     if result.parameter:
-        lines.append("  " + dim("Parameter: " + ", ".join(f"{name} = {value}"
-                                                           for name, value in result.parameter.items())))
+        lines.append(
+            "  "
+            + dim(
+                "Parameter: "
+                + ", ".join(
+                    f"{name} = {value}" for name, value in result.parameter.items()
+                )
+            )
+        )
 
-    header = ["Run", "Value awal", "Value akhir", *result.runs[0].metrics]
+    lifo = result.runs[0].final_state.problem.objective == "lifo"
+    header = ["Run", "Value awal", "Value akhir"]
+    if lifo:
+        header = [
+            "Run",
+            "Objective awal",
+            "Objective akhir",
+            "Value akhir",
+            "Penalti akhir",
+        ]
+    header += list(result.runs[0].metrics)
     rows = []
     for run in result.runs:
-        rows.append([run.label, run.initial_state.objective(), run.final_state.objective(),
-                     *run.metrics.values()])
+        row = [
+            run.label,
+            run.initial_state.objective_text(),
+            run.final_state.objective_text(),
+        ]
+        if lifo:
+            row += [
+                run.final_state.value,
+                f"{run.final_state.normalized_penalty():.2f}",
+            ]
+        rows.append(row + list(run.metrics.values()))
     lines.append(table(header, rows, ["<"] + [">"] * (len(header) - 1)))
 
     best = max(result.runs, key=lambda run: run.final_state.objective())
-    best_value = best.final_state.objective()
-    percentage = f"{best_value / upper_bound * 100:.1f}% dari batas atas {upper_bound}" if upper_bound else ""
+    best_value = best.final_state.value
+    details = [f"value {best_value}"] if lifo else []
+    if upper_bound:
+        details.append(
+            f"{best_value / upper_bound * 100:.1f}% dari batas atas {upper_bound}"
+        )
     best_label = best.label
     # Di GA, label run bareng konfigurasinya
     if "Populasi" in best.metrics:
-        best_label += f", populasi {best.metrics['Populasi']}, iterasi {best.metrics['Iterasi']}"
-    lines.append(f"\n  Run terbaik ({best_label}): value {green(bold(str(best_value)))}"
-                 f"  {dim(percentage)}")
+        best_label += (
+            f", populasi {best.metrics['Populasi']}, iterasi {best.metrics['Iterasi']}"
+        )
+    lines.append(
+        f"\n  Run terbaik ({best_label}): {'objective' if lifo else 'value'} "
+        f"{green(bold(best.final_state.objective_text()))}"
+        f"  {dim(', '.join(details))}"
+    )
     lines.append(state_table(best.initial_state, "State awal"))
     lines.append(state_table(best.final_state, "State akhir"))
     return "\n".join(lines)

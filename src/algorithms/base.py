@@ -13,7 +13,7 @@ class SearchResult:
     initial_state: State
     final_state: State
     # Nilai objective tiap iterasi. Di GA, isinya nilai max populasi tiap generasi
-    history: list[int]
+    history: list[float]
     iterations: int
     duration: float = 0.0
     # Data khusus per algoritma, e.g. history_prob di SA atau history_avg di GA

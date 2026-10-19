@@ -64,10 +64,21 @@ class Experiment:
         self.folder_output = folder_output
         self.report_progress: Callable[[str], None] = lambda text: None
 
+    def objective_parameter(self) -> dict[str, Any]:
+        # Kosong utk objective value biar nama folder output lama sama
+        p = self.parameter
+        if p.objective == "value":
+            return {}
+        if p.tie_breaker:
+            return {"objective": "lifo", "tie_breaker": True}
+        return {"objective": "lifo", "lambda": p.penalty_weight}
+
     def run_repeated(self, experiment_result: ExperimentResult, algorithm: LocalSearch, total_runs: int,
                      configuration: str | None = None, file_prefix: str = "") -> list[RunEntry]:
         # Jalanin algoritma sebanyak n_runs kali.
         # configuration sama file_prefix buat ngebedain run antar-konfigurasi GA dlm satu eksperimen.
+        p = self.parameter
+        self.problem.configure_objective(p.objective, p.penalty_weight, p.tie_breaker)
         entries = []
         # Seed tiap run diturunkan dari seed global biar hasil tetap reproducible
         seeds = [random.getrandbits(32) for _ in range(self.parameter.n_runs)]
@@ -103,8 +114,11 @@ class Experiment:
         return entries
 
     def run_algorithm(self, algorithm: LocalSearch, folder_name: str) -> tuple[ExperimentResult, list[RunEntry]]:
-        folder_name = folder_with_parameter(folder_name, {**algorithm.parameter(), "n_runs": self.parameter.n_runs})
-        experiment_result = ExperimentResult(algorithm.name, algorithm.parameter(), self.folder_output / folder_name)
+        parameter = {**algorithm.parameter(), **self.objective_parameter()}
+        folder_name = folder_with_parameter(folder_name, {**parameter, "n_runs": self.parameter.n_runs})
+        experiment_result = ExperimentResult(algorithm.name,
+                                             {name: format_value(value) for name, value in parameter.items()},
+                                             self.folder_output / folder_name)
         entries = self.run_repeated(experiment_result, algorithm, self.parameter.n_runs)
         histories = [result.history for _, _, result in entries]
         experiment_result.plot.append(lambda ax, selected: plot.draw_objective(
@@ -146,11 +160,10 @@ class Experiment:
     def run_ga(self, title: str, folder_name: str, control: dict[str, Any],
                configurations: list[tuple[int, int]]) -> ExperimentResult:
         p = self.parameter
-        folder_name = folder_with_parameter(folder_name, {**control, "mutation_rate": p.mutation_rate,
-                                                          "elite_count": p.elite_count, "reinsert": p.reinsert,
-                                                          "n_runs": p.n_runs})
-        experiment_result = ExperimentResult(title, {"mutation_rate": p.mutation_rate, "elite_count": p.elite_count,
-                                                     "reinsert": format_value(p.reinsert)},
+        parameter = {"mutation_rate": p.mutation_rate, "elite_count": p.elite_count, "reinsert": p.reinsert,
+                     **self.objective_parameter()}
+        folder_name = folder_with_parameter(folder_name, {**control, **parameter, "n_runs": p.n_runs})
+        experiment_result = ExperimentResult(title, {name: format_value(value) for name, value in parameter.items()},
                                              self.folder_output / "genetic_algorithm" / folder_name)
         total_runs = len(configurations) * p.n_runs
 

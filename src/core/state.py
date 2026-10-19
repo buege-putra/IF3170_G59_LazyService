@@ -22,6 +22,24 @@ def bases_overlap(box_1: Box, box_2: Box) -> bool:
     return overlap_x and overlap_y
 
 
+def intervals_overlap(start_1: int, length_1: int, start_2: int, length_2: int) -> bool:
+    return start_1 < start_2 + length_2 and start_2 < start_1 + length_1
+
+
+def blocks(blocker: Box, target: Box, door_on_x: bool) -> bool:
+    # blocker harus dipindah dulu supaya target bisa dikeluarin, karena blocker ada di atas target
+    # atau ada di antara target dan pintu
+    bx, by, bz, bdx, bdy, bdz = blocker
+    tx, ty, tz, tdx, tdy, tdz = target
+    if bz >= tz + tdz and bases_overlap(blocker, target):
+        return True
+    if not intervals_overlap(bz, bdz, tz, tdz):
+        return False
+    if door_on_x:
+        return bx >= tx + tdx and intervals_overlap(by, bdy, ty, tdy)
+    return by + bdy <= ty and intervals_overlap(bx, bdx, tx, tdx)
+
+
 class State:
     """
     Utk tiap paket:
@@ -41,14 +59,22 @@ class State:
         self.problem = problem
         self.trucks = problem.trucks
         self.packages = problem.packages
-        self.truck_of: dict[str, int | None] = {package_id: None for package_id in self.packages}
-        self.positions: dict[str, Position | None] = {package_id: None for package_id in self.packages}
-        self.orientations: dict[str, Orientation] = {package_id: ("w", "l", "h") for package_id in self.packages}
+        self.truck_of: dict[str, int | None] = {
+            package_id: None for package_id in self.packages
+        }
+        self.positions: dict[str, Position | None] = {
+            package_id: None for package_id in self.packages
+        }
+        self.orientations: dict[str, Orientation] = {
+            package_id: ("w", "l", "h") for package_id in self.packages
+        }
         # Dicache biar gak dihitung ulang, diupdate sama place() dan rotate():
-        # total value, berat per truk, sama kotak (x, y, z, dx, dy, dz) tiap paket di truk
+        # total value, berat per truk, kotak (x, y, z, dx, dy, dz) tiap paket di truk,
+        # dan raw penalty urutan bongkar (cuma dihitung kalo objective "lifo")
         self.value = 0
         self.truck_weights = [0] * len(self.trucks)
         self.boxes: dict[str, Box] = {}
+        self.penalty = 0
 
     @classmethod
     def random_initial(cls, problem: Problem, insert_probability: float = 0.5) -> State:
@@ -84,10 +110,14 @@ class State:
         new_state.value = self.value
         new_state.truck_weights = list(self.truck_weights)
         new_state.boxes = dict(self.boxes)
+        new_state.penalty = self.penalty
         return new_state
 
-    def place(self, package_id: str, truck_index: int | None, position: Position | None) -> None:
-        # Semua perubahan tempat paket lewat sini biar value sama berat per truk tetap sinkron
+    def place(
+        self, package_id: str, truck_index: int | None, position: Position | None
+    ) -> None:
+        # Semua perubahan tempat paket lewat sini biar value, berat per truk, sama penalty tetap sinkron
+        self.penalty -= self.package_penalty(package_id)
         package = self.packages[package_id]
         old_truck = self.truck_of[package_id]
         if old_truck is not None:
@@ -99,10 +129,13 @@ class State:
         self.truck_of[package_id] = truck_index
         self.positions[package_id] = position
         self.update_box(package_id)
+        self.penalty += self.package_penalty(package_id)
 
     def rotate(self, package_id: str, axis: str) -> None:
+        self.penalty -= self.package_penalty(package_id)
         self.orientations[package_id] = rotate_90(self.orientations[package_id], axis)
         self.update_box(package_id)
+        self.penalty += self.package_penalty(package_id)
 
     def update_box(self, package_id: str) -> None:
         position = self.positions[package_id]
@@ -110,7 +143,9 @@ class State:
             self.boxes.pop(package_id, None)
             return
         x, y, z = position
-        dx, dy, dz = self.packages[package_id].oriented_dimensions(self.orientations[package_id])
+        dx, dy, dz = self.packages[package_id].oriented_dimensions(
+            self.orientations[package_id]
+        )
         self.boxes[package_id] = (x, y, z, dx, dy, dz)
 
     def inside(self, truck_index: int | None = None) -> list[str]:
@@ -125,10 +160,72 @@ class State:
         return result
 
     def outside(self) -> list[str]:
-        return [package_id for package_id in self.packages if self.truck_of[package_id] is None]
+        return [
+            package_id
+            for package_id in self.packages
+            if self.truck_of[package_id] is None
+        ]
 
-    def objective(self) -> int:
-        return self.value
+    def objective(self) -> float:
+        if self.problem.penalty_scale == 0:
+            return self.value
+        return self.value - self.problem.penalty_scale * self.penalty
+
+    def normalized_penalty(self) -> float:
+        if self.problem.eta_range == 0:
+            return 0.0
+        return self.penalty / self.problem.eta_range
+
+    @staticmethod
+    def pair_penalty(
+        box_1: Box, eta_1: int, box_2: Box, eta_2: int, door_on_x: bool
+    ) -> int:
+        # Pasangan melanggar kalo paket yg turun belakangan (ETA lebih besar) ngalangin paket yg turun duluan.
+        # Nilainya selisih ETA, pelanggaran yg lebih parah dihukum lebih berat.
+        if eta_1 < eta_2 and blocks(box_2, box_1, door_on_x):
+            return eta_2 - eta_1
+        if eta_2 < eta_1 and blocks(box_1, box_2, door_on_x):
+            return eta_1 - eta_2
+        return 0
+
+    def package_penalty(self, package_id: str) -> int:
+        # Total penalty semua pasangan yg ngelibatin package_id di truk yg sama
+        if self.problem.objective != "lifo" or package_id not in self.boxes:
+            return 0
+        package_box = self.boxes[package_id]
+        eta = self.packages[package_id].eta
+        door_on_x = self.trucks[self.truck_index_of(package_id)].door_on_x
+        total = 0
+        for other_id, other_box in self.other_boxes_in_truck(package_id):
+            total += self.pair_penalty(
+                package_box, eta, other_box, self.packages[other_id].eta, door_on_x
+            )
+        return total
+
+    def violations(self, truck_index: int) -> list[tuple[str, str]]:
+        # Pasangan (paket yg dihalangi, paket penghalang) yg melanggar urutan bongkar di satu truk
+        door_on_x = self.trucks[truck_index].door_on_x
+        result = []
+        for id_1, id_2 in combinations(self.inside(truck_index), 2):
+            eta_1, eta_2 = self.packages[id_1].eta, self.packages[id_2].eta
+            if (
+                self.pair_penalty(
+                    self.box(id_1), eta_1, self.box(id_2), eta_2, door_on_x
+                )
+                > 0
+            ):
+                result.append((id_1, id_2) if eta_1 < eta_2 else (id_2, id_1))
+        return result
+
+    def objective_text(self) -> str:
+        if self.problem.objective == "value":
+            return str(self.value)
+        return f"{self.objective():.3f}"
+
+    def objective_label(self) -> str:
+        if self.problem.objective == "value":
+            return f"value = {self.value}"
+        return f"objective = {self.objective_text()}, value = {self.value}, penalti = {self.normalized_penalty():.2f}"
 
     def total_weight(self, truck_index: int) -> int:
         return self.truck_weights[truck_index]
@@ -154,15 +251,31 @@ class State:
         for truck_index, truck in enumerate(self.trucks):
             truck_content = []
             for package_id in self.inside(truck_index):
-                truck_content.append({
-                    "id": package_id,
-                    "position": list(self.box(package_id)[:3]),
-                    "orientation": "".join(self.orientations[package_id]),
-                    "size": list(self.box(package_id)[3:]),
-                })
-            trucks_content.append({"id": truck.id, "weight": self.total_weight(truck_index),
-                                   "max_capacity": truck.max_capacity, "packages": truck_content})
-        return {"value": self.objective(), "trucks": trucks_content, "outside": self.outside()}
+                truck_content.append(
+                    {
+                        "id": package_id,
+                        "position": list(self.box(package_id)[:3]),
+                        "orientation": "".join(self.orientations[package_id]),
+                        "size": list(self.box(package_id)[3:]),
+                    }
+                )
+            truck_summary: dict[str, Any] = {
+                "id": truck.id,
+                "weight": self.total_weight(truck_index),
+                "max_capacity": truck.max_capacity,
+                "packages": truck_content,
+            }
+            if self.problem.objective == "lifo":
+                truck_summary["violations"] = [
+                    list(pair) for pair in self.violations(truck_index)
+                ]
+            trucks_content.append(truck_summary)
+        summary: dict[str, Any] = {"value": self.value}
+        if self.problem.objective == "lifo":
+            summary.update(
+                {"objective": self.objective(), "penalty": self.normalized_penalty()}
+            )
+        return {**summary, "trucks": trucks_content, "outside": self.outside()}
 
     # Constraint per paket. Semua method di bawah hanya untuk paket yg ada di dalam truk.
 
@@ -170,7 +283,9 @@ class State:
         # Paket gak nembus dinding peti kemas
         W, L, H = self.trucks[self.truck_index_of(package_id)].dimensions
         x, y, z, dx, dy, dz = self.box(package_id)
-        return 0 <= x and 0 <= y and 0 <= z and x + dx <= W and y + dy <= L and z + dz <= H
+        return (
+            0 <= x and 0 <= y and 0 <= z and x + dx <= W and y + dy <= L and z + dz <= H
+        )
 
     def collides(self, package_id: str) -> bool:
         # Paket beririsan di x, y, dan z sekaligus sama paket lain di truk yg sama
@@ -192,7 +307,9 @@ class State:
 
         supported = False
         for below_id, box_below in self.other_boxes_in_truck(package_id):
-            if box_below[2] + box_below[5] == z and bases_overlap(package_box, box_below):
+            if box_below[2] + box_below[5] == z and bases_overlap(
+                package_box, box_below
+            ):
                 if self.packages[below_id].is_fragile:
                     return False
                 supported = True
@@ -214,11 +331,17 @@ class State:
             if self.total_weight(truck_index) > truck.max_capacity:
                 return False
         for package_id in self.inside():
-            if not self.within_bounds(package_id) or self.collides(package_id) or not self.is_supported(package_id):
+            if (
+                not self.within_bounds(package_id)
+                or self.collides(package_id)
+                or not self.is_supported(package_id)
+            ):
                 return False
         return True
 
-    def valid_after_change(self, changed: Sequence[str], before: State | None = None) -> bool:
+    def valid_after_change(
+        self, changed: Sequence[str], before: State | None = None
+    ) -> bool:
         # Setara sama valid() kalo state sblm perubahan (before) valid, tapi cuma ngecek yg bisa
         # kena dampak: paket yg berubah, truk yg nerima paket, dan paket yg di state before numpu di
         # paket yg berubah. Constraint lain gak berubah jadi pasti tetap terpenuhi.
@@ -229,7 +352,11 @@ class State:
                 continue
             if self.total_weight(truck_index) > self.trucks[truck_index].max_capacity:
                 return False
-            if not self.within_bounds(package_id) or self.collides(package_id) or not self.is_supported(package_id):
+            if (
+                not self.within_bounds(package_id)
+                or self.collides(package_id)
+                or not self.is_supported(package_id)
+            ):
                 return False
             if self.packages[package_id].is_fragile and self.resting_on(package_id):
                 return False
@@ -246,7 +373,9 @@ class State:
     def z_levels(self, package_id: str, truck_index: int) -> list[int]:
         # z cuma di lantai (0) atau pas di atas paket lain, karena z lainnya pasti melayang
         H = self.trucks[truck_index].dimensions[2]
-        dz = self.packages[package_id].oriented_dimensions(self.orientations[package_id])[2]
+        dz = self.packages[package_id].oriented_dimensions(
+            self.orientations[package_id]
+        )[2]
         level = {0}
         for other_id, other_box in self.boxes.items():
             if other_id != package_id and self.truck_of[other_id] == truck_index:
@@ -255,7 +384,9 @@ class State:
 
     def candidate_positions(self, package_id: str, truck_index: int) -> list[Position]:
         W, L, _ = self.trucks[truck_index].dimensions
-        dx, dy, _ = self.packages[package_id].oriented_dimensions(self.orientations[package_id])
+        dx, dy, _ = self.packages[package_id].oriented_dimensions(
+            self.orientations[package_id]
+        )
         candidates = []
         for z in self.z_levels(package_id, truck_index):
             for x in range(W - dx + 1):
@@ -263,10 +394,14 @@ class State:
                     candidates.append((x, y, z))
         return candidates
 
-    def random_candidate_position(self, package_id: str, truck_index: int) -> Position | None:
+    def random_candidate_position(
+        self, package_id: str, truck_index: int
+    ) -> Position | None:
         # Milih satu posisi acak dari candidate_positions selain posisi sekarang.
         W, L, _ = self.trucks[truck_index].dimensions
-        dx, dy, _ = self.packages[package_id].oriented_dimensions(self.orientations[package_id])
+        dx, dy, _ = self.packages[package_id].oriented_dimensions(
+            self.orientations[package_id]
+        )
         count_x, count_y = W - dx + 1, L - dy + 1
         if count_x <= 0 or count_y <= 0:
             return None
@@ -303,8 +438,12 @@ class State:
         elif move[0] == "swap":
             _, package_id_1, package_id_2 = move
             changed = (package_id_1, package_id_2)
-            successor.place(package_id_1, self.truck_of[package_id_2], self.positions[package_id_2])
-            successor.place(package_id_2, self.truck_of[package_id_1], self.positions[package_id_1])
+            successor.place(
+                package_id_1, self.truck_of[package_id_2], self.positions[package_id_2]
+            )
+            successor.place(
+                package_id_2, self.truck_of[package_id_1], self.positions[package_id_1]
+            )
         else:
             _, package_id, axis = move
             changed = (package_id,)
@@ -318,12 +457,18 @@ class State:
         moves: list[Move] = []
         # Tukar dua paket, minimal satu ada di dalam truk
         for package_id_1, package_id_2 in combinations(self.packages, 2):
-            if self.truck_of[package_id_1] is not None or self.truck_of[package_id_2] is not None:
+            if (
+                self.truck_of[package_id_1] is not None
+                or self.truck_of[package_id_2] is not None
+            ):
                 moves.append(("swap", package_id_1, package_id_2))
         for package_id in self.packages:
             for truck_index in range(len(self.trucks)):
                 for new_position in self.candidate_positions(package_id, truck_index):
-                    same = (truck_index == self.truck_of[package_id] and new_position == self.positions[package_id])
+                    same = (
+                        truck_index == self.truck_of[package_id]
+                        and new_position == self.positions[package_id]
+                    )
                     if not same:
                         moves.append(("move", package_id, truck_index, new_position))
         for package_id in self.inside():
@@ -348,7 +493,10 @@ class State:
 
             if kind == "swap":
                 package_id_1, package_id_2 = random.sample(all_ids, 2)
-                if self.truck_of[package_id_1] is None and self.truck_of[package_id_2] is None:
+                if (
+                    self.truck_of[package_id_1] is None
+                    and self.truck_of[package_id_2] is None
+                ):
                     continue
                 move = ("swap", package_id_1, package_id_2)
 

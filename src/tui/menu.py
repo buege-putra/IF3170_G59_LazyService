@@ -7,9 +7,23 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from experiments.parameter import PARAMETER_DEFINITIONS, ParameterDefinition, format_value
+from experiments.parameter import (
+    PARAMETER_DEFINITIONS,
+    Parameter,
+    ParameterDefinition,
+    format_value,
+)
 from experiments.runner import Experiment, ExperimentResult
-from tui.display import accent, bold, clear_screen, dim, heading, red, result_summary, table
+from tui.display import (
+    accent,
+    bold,
+    clear_screen,
+    dim,
+    heading,
+    red,
+    result_summary,
+    table,
+)
 from visualization.plot import show_results
 
 ALL_HC = ["steepest", "sideways", "random_restart", "stochastic"]
@@ -59,31 +73,64 @@ def print_menu(menu_groups: list[MenuGroup]) -> None:
             print(f"    {bold(f'[{code}]')} {label}")
 
 
-def main_menu_items(status: TuiState) -> list[tuple[str, list[tuple[str, str, Action]]]]:
+def main_menu_items(
+    status: TuiState,
+) -> list[tuple[str, list[tuple[str, str, Action]]]]:
     # Tiap pilihan isinya (kode, label, aksi)
     return [
-        ("Hill-Climbing", [
-            ("1a", "Steepest Ascent", ["steepest"]),
-            ("1b", "Sideways Move", ["sideways"]),
-            ("1c", "Random Restart", ["random_restart"]),
-            ("1d", "Stochastic", ["stochastic"]),
-        ]),
-        ("Simulated Annealing", [
-            ("2", "Simulated Annealing", ["simulated_annealing"]),
-        ]),
-        ("Genetic Algorithm", [
-            ("3a", "Kontrol jumlah populasi (variasi banyak iterasi)", ["ga_population_control"]),
-            ("3b", "Kontrol banyak iterasi (variasi jumlah populasi)", ["ga_iteration_control"]),
-        ]),
-        ("Lainnya", [
-            ("4a", "Jalankan semua eksperimen", ALL_HC + ["simulated_annealing"] + ALL_GA),
-            ("4b", "Lihat data input", view_input),
-        ]),
-        ("Pengaturan", [
-            ("5a", "Parameter algoritma", parameter_menu),
-            ("5b", f"Seed: {status.seed}", change_seed),
-            ("5c", f"Visualisasi setelah eksperimen: {'ON' if status.visualize else 'OFF'}", toggle_visualization),
-        ]),
+        (
+            "Hill-Climbing",
+            [
+                ("1a", "Steepest Ascent", ["steepest"]),
+                ("1b", "Sideways Move", ["sideways"]),
+                ("1c", "Random Restart", ["random_restart"]),
+                ("1d", "Stochastic", ["stochastic"]),
+            ],
+        ),
+        (
+            "Simulated Annealing",
+            [
+                ("2", "Simulated Annealing", ["simulated_annealing"]),
+            ],
+        ),
+        (
+            "Genetic Algorithm",
+            [
+                (
+                    "3a",
+                    "Kontrol jumlah populasi (variasi banyak iterasi)",
+                    ["ga_population_control"],
+                ),
+                (
+                    "3b",
+                    "Kontrol banyak iterasi (variasi jumlah populasi)",
+                    ["ga_iteration_control"],
+                ),
+            ],
+        ),
+        (
+            "Lainnya",
+            [
+                (
+                    "4a",
+                    "Jalankan semua eksperimen",
+                    ALL_HC + ["simulated_annealing"] + ALL_GA,
+                ),
+                ("4b", "Lihat data input", view_input),
+            ],
+        ),
+        (
+            "Pengaturan",
+            [
+                ("5a", "Parameter algoritma", parameter_menu),
+                ("5b", f"Seed: {status.seed}", change_seed),
+                (
+                    "5c",
+                    f"Visualisasi setelah eksperimen: {'ON' if status.visualize else 'OFF'}",
+                    toggle_visualization,
+                ),
+            ],
+        ),
     ]
 
 
@@ -92,15 +139,37 @@ def view_input(status: TuiState) -> None:
     clear_screen()
     print(heading(f"Data input: {status.path_input}"))
     print(f"\n  {accent('Truk')}")
-    print(table(["Id", "Dimensi (w, l, h)", "Max capacity"],
-                [[truck.id, str(truck.dimensions), truck.max_capacity] for truck in problem.trucks],
-                ["<", "<", ">"]))
+    print(
+        table(
+            ["Id", "Dimensi (w, l, h)", "Max capacity"],
+            [
+                [truck.id, str(truck.dimensions), truck.max_capacity]
+                for truck in problem.trucks
+            ],
+            ["<", "<", ">"],
+        )
+    )
     print(f"\n  {accent('Paket')}")
-    print(table(["Id", "Dimensi (w, l, h)", "Value", "Weight", "Fragile", "ETA"],
-                [[package.id, str(package.dimensions), package.value, package.weight,
-                  "ya" if package.is_fragile else "", package.eta] for package in problem.package_list],
-                ["<", "<", ">", ">", "<", ">"]))
-    print(f"\n  Batas atas value (knapsack berdasarkan berat dan volume): {bold(str(status.upper_bound))}")
+    print(
+        table(
+            ["Id", "Dimensi (w, l, h)", "Value", "Weight", "Fragile", "ETA"],
+            [
+                [
+                    package.id,
+                    str(package.dimensions),
+                    package.value,
+                    package.weight,
+                    "ya" if package.is_fragile else "",
+                    package.eta,
+                ]
+                for package in problem.package_list
+            ],
+            ["<", "<", ">", ">", "<", ">"],
+        )
+    )
+    print(
+        f"\n  Batas atas value (knapsack berdasarkan berat dan volume): {bold(str(status.upper_bound))}"
+    )
     wait_for_back()
 
 
@@ -116,7 +185,9 @@ def parameter_menu(status: TuiState) -> None:
             for definition in entries:
                 definition_by_code[definition.code] = definition
                 value = format_value(getattr(parameter, definition.name))
-                options.append((definition.code, f"{definition.description}: {bold(value)}"))
+                options.append(
+                    (definition.code, f"{definition.description}: {bold(value)}")
+                )
             menu_groups.append((group_name, options))
         print_menu(menu_groups)
         status.print_message()
@@ -130,14 +201,23 @@ def parameter_menu(status: TuiState) -> None:
 
         definition = definition_by_code[selection]
         if definition.parse is None:
-            setattr(parameter, definition.name, not getattr(parameter, definition.name))
+            current = getattr(parameter, definition.name)
+            if definition.choices:
+                next_index = (definition.choices.index(current) + 1) % len(
+                    definition.choices
+                )
+                setattr(parameter, definition.name, definition.choices[next_index])
+            else:
+                setattr(parameter, definition.name, not current)
             continue
 
         text = input(f"  Nilai baru untuk {definition.description}: ")
         try:
             setattr(parameter, definition.name, definition.parse(text))
         except ValueError as error:
-            status.message = red(f"Nilai tidak valid untuk {definition.description}: {error}")
+            status.message = red(
+                f"Nilai tidak valid untuk {definition.description}: {error}"
+            )
 
 
 def change_seed(status: TuiState) -> None:
@@ -185,8 +265,23 @@ def run_experiments(status: TuiState, methods: list[str]) -> None:
     if status.visualize:
         print(dim("\n  Window visualisasi dibuka. Tutup window untuk melanjutkan."))
         if not show_results(results):
-            print(red("  Visualisasi tidak dapat ditampilkan (tidak ada display). Gambar tetap tersimpan."))
+            print(
+                red(
+                    "  Visualisasi tidak dapat ditampilkan (tidak ada display). Gambar tetap tersimpan."
+                )
+            )
     wait_for_back()
+
+
+def objective_description(parameter: Parameter) -> str:
+    if parameter.objective == "value":
+        return "value (total value paket di dalam truk)"
+    penalty = (
+        "tie-breaker"
+        if parameter.tie_breaker
+        else f"lambda = {parameter.penalty_weight}"
+    )
+    return f"lifo (value - penalti urutan bongkar, {penalty})"
 
 
 def run_tui(experiment: Experiment, path_input: str, seed: int) -> None:
@@ -196,17 +291,29 @@ def run_tui(experiment: Experiment, path_input: str, seed: int) -> None:
     while True:
         clear_screen()
         print(heading("Local Search: Pengisian Paket ke Truk Peti Kemas"))
-        print(f"\n  {dim('Input ')}       {status.path_input} ({len(problem.package_list)} paket, "
-              f"{len(problem.trucks)} truk)")
-        print(f"  {dim('Batas atas')}   {status.upper_bound}  "
-              f"{dim('(value maksimum jika hanya total berat dan volume dihitung, susunan paket diabaikan)')}")
+        print(
+            f"\n  {dim('Input ')}       {status.path_input} ({len(problem.package_list)} paket, "
+            f"{len(problem.trucks)} truk)"
+        )
+        print(
+            f"  {dim('Batas atas')}   {status.upper_bound}  "
+            f"{dim('(value maksimum jika hanya total berat dan volume dihitung, susunan paket diabaikan)')}"
+        )
+        print(f"  {dim('Objective')}    {objective_description(experiment.parameter)}")
         print(f"  {dim('Output')}       {relative_path(experiment.folder_output)}")
 
         menu = main_menu_items(status)
-        print_menu([(name, [(code, label) for code, label, _ in entries]) for name, entries in menu])
+        print_menu(
+            [
+                (name, [(code, label) for code, label, _ in entries])
+                for name, entries in menu
+            ]
+        )
         print(f"\n  {bold('[q]')} Keluar")
         status.print_message()
-        action_by_code = {code: action for _, entries in menu for code, _, action in entries}
+        action_by_code = {
+            code: action for _, entries in menu for code, _, action in entries
+        }
 
         try:
             selection = ask("\n  Pilihan: ")

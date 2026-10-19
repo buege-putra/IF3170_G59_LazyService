@@ -82,8 +82,12 @@ class GeneticAlgorithm(LocalSearch):
                     break
 
     @staticmethod
-    def select(population: list[State], fitness: list[int]) -> State:
-        # Peluang kepilih sebanding dgn fitness
+    def select(population: list[State], fitness: list[float]) -> State:
+        # Peluang kepilih sebanding dgn fitness.
+        # Fitness bisa negatif di objective lifo, jadi kalo ada yg negatif semuanya digeser biar minimalnya 0
+        lowest = min(fitness)
+        if lowest < 0:
+            fitness = [value - lowest for value in fitness]
         if sum(fitness) == 0:
             return random.choice(population)
         return random.choices(population, weights=fitness, k=1)[0]

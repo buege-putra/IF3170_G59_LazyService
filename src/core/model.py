@@ -45,3 +45,10 @@ class Truck:
         self.id = id
         self.dimensions = dimensions   # (W, L, H)
         self.max_capacity = max_capacity
+
+    @property
+    def door_on_x(self) -> bool:
+        # Pintu ada di ujung sumbu terpanjang.
+        # x = W if W >= L, else y = 0
+        W, L, _ = self.dimensions
+        return W >= L

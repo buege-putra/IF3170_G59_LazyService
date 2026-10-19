@@ -8,12 +8,32 @@ from core.model import Package, Truck
 
 
 class Problem:
-    """Data persoalan yg gak berubah selama pencarian: daftar truk sama daftar paket."""
+    """Data persoalan yg gak berubah selama pencarian: daftar truk, daftar paket, dan konfigurasi objective."""
 
     def __init__(self, trucks: list[Truck], package_list: list[Package]) -> None:
         self.trucks = trucks
         self.package_list = package_list
         self.packages: dict[str, Package] = {package.id: package for package in package_list}
+        etas = [package.eta for package in package_list]
+        self.eta_range = max(etas) - min(etas)
+        self.configure_objective("value", 10.0, False)
+
+    def configure_objective(self, objective: str, penalty_weight: float, tie_breaker: bool) -> None:
+        # objective "value" = total value
+        # objective "lifo" = total value - penalty
+        # penalty_scale ngubah raw penalty (jumlah selisih ETA) jadi pengurang objective
+        self.objective = objective
+        self.penalty_weight = penalty_weight
+        self.tie_breaker = tie_breaker
+        if objective == "value" or self.eta_range == 0:
+            self.penalty_scale = 0.0
+        elif tie_breaker:
+            # Tiap pasangan nyumbang max 1 setelah dinormalisasi, total penalty < 1
+            num_packages = len(self.package_list)
+            max_pairs = num_packages * (num_packages - 1) // 2
+            self.penalty_scale = 1 / (self.eta_range * (max_pairs + 1))
+        else:
+            self.penalty_scale = penalty_weight / self.eta_range
 
     @cached_property
     def upper_bound(self) -> int:

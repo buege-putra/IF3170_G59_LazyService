@@ -10,8 +10,8 @@ from core.state import State
 
 class HillClimbing(LocalSearch):
     @staticmethod
-    def best_successor(state: State) -> tuple[int, State]:
-        # Successor dgn value tertinggi (diacak kalo ada yg seri)
+    def best_successor(state: State) -> tuple[float, State]:
+        # Successor dgn objective tertinggi (diacak kalo ada yg seri)
         successors = state.all_successors()
         if len(successors) == 0:
             return state.objective(), state
