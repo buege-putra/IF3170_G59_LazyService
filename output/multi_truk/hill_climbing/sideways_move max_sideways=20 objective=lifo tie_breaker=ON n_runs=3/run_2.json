@@ -1,0 +1,163 @@
+{
+  "parameters": {"max_sideways": 20},
+  "initial_state": {
+    "value": 755,
+    "objective": 754.994095069383,
+    "penalty": 6.666666666666667,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 161,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P1", "position": [7, 1, 0], "orientation": "hlw", "size": [1, 5, 3]},
+          {"id": "P3", "position": [1, 5, 2], "orientation": "wlh", "size": [2, 1, 2]},
+          {"id": "P8", "position": [2, 3, 0], "orientation": "lhw", "size": [2, 3, 2]},
+          {"id": "P10", "position": [0, 2, 2], "orientation": "lhw", "size": [3, 1, 2]},
+          {"id": "P17", "position": [0, 1, 0], "orientation": "lhw", "size": [4, 2, 2]},
+          {"id": "P32", "position": [4, 0, 0], "orientation": "whl", "size": [3, 2, 5]},
+          {"id": "P37", "position": [3, 2, 2], "orientation": "wlh", "size": [2, 3, 2]},
+          {"id": "P39", "position": [5, 3, 0], "orientation": "wlh", "size": [2, 3, 1]},
+          {"id": "P40", "position": [5, 3, 1], "orientation": "whl", "size": [2, 3, 4]}
+        ],
+        "violations": [
+          ["P3", "P1"],
+          ["P8", "P1"],
+          ["P17", "P1"],
+          ["P37", "P1"],
+          ["P39", "P1"],
+          ["P40", "P1"],
+          ["P17", "P10"],
+          ["P17", "P32"]
+        ]
+      },
+      {
+        "id": "Truk-2",
+        "weight": 117,
+        "max_capacity": 150,
+        "packages": [
+          {"id": "P2", "position": [1, 0, 0], "orientation": "lhw", "size": [2, 2, 4]},
+          {"id": "P5", "position": [3, 3, 0], "orientation": "hlw", "size": [3, 3, 2]},
+          {"id": "P12", "position": [4, 2, 2], "orientation": "hwl", "size": [1, 2, 2]},
+          {"id": "P15", "position": [5, 1, 0], "orientation": "lhw", "size": [1, 2, 4]},
+          {"id": "P21", "position": [0, 2, 2], "orientation": "lwh", "size": [4, 3, 1]},
+          {"id": "P26", "position": [3, 4, 3], "orientation": "lhw", "size": [2, 2, 1]},
+          {"id": "P27", "position": [0, 3, 0], "orientation": "hlw", "size": [2, 3, 2]},
+          {"id": "P38", "position": [0, 2, 3], "orientation": "lhw", "size": [3, 3, 1]},
+          {"id": "P44", "position": [3, 0, 0], "orientation": "lhw", "size": [3, 1, 3]}
+        ],
+        "violations": [
+          ["P5", "P12"],
+          ["P5", "P21"],
+          ["P38", "P12"],
+          ["P27", "P21"],
+          ["P38", "P26"]
+        ]
+      },
+      {
+        "id": "Truk-3",
+        "weight": 61,
+        "max_capacity": 120,
+        "packages": [
+          {"id": "P25", "position": [3, 0, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P35", "position": [3, 2, 3], "orientation": "hwl", "size": [3, 3, 1]},
+          {"id": "P36", "position": [1, 2, 0], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P41", "position": [4, 2, 0], "orientation": "hwl", "size": [1, 3, 3]},
+          {"id": "P45", "position": [0, 0, 0], "orientation": "lwh", "size": [2, 2, 3]}
+        ],
+        "violations": []
+      }
+    ],
+    "outside": ["P4", "P6", "P7", "P9", "P11", "P13", "P14", "P16", "P18", "P19", "P20", "P22", "P23", "P24", "P28", "P29", "P30", "P31", "P33", "P34", "P42", "P43", "P46", "P47", "P48"]
+  },
+  "final_state": {
+    "value": 1205,
+    "objective": 1204.992028343667,
+    "penalty": 9.0,
+    "trucks": [
+      {
+        "id": "Truk-1",
+        "weight": 245,
+        "max_capacity": 250,
+        "packages": [
+          {"id": "P1", "position": [7, 0, 0], "orientation": "hwl", "size": [1, 3, 5]},
+          {"id": "P5", "position": [2, 3, 0], "orientation": "lhw", "size": [3, 3, 2]},
+          {"id": "P12", "position": [0, 4, 0], "orientation": "hlw", "size": [1, 2, 2]},
+          {"id": "P16", "position": [0, 0, 0], "orientation": "lhw", "size": [4, 1, 4]},
+          {"id": "P17", "position": [0, 1, 0], "orientation": "lhw", "size": [4, 2, 2]},
+          {"id": "P28", "position": [5, 3, 1], "orientation": "wlh", "size": [3, 3, 3]},
+          {"id": "P31", "position": [1, 3, 0], "orientation": "wlh", "size": [1, 3, 2]},
+          {"id": "P32", "position": [4, 0, 0], "orientation": "whl", "size": [3, 2, 5]},
+          {"id": "P33", "position": [0, 3, 2], "orientation": "hlw", "size": [3, 2, 3]},
+          {"id": "P35", "position": [5, 3, 0], "orientation": "hwl", "size": [3, 3, 1]},
+          {"id": "P44", "position": [2, 5, 2], "orientation": "whl", "size": [3, 1, 3]},
+          {"id": "P46", "position": [3, 2, 2], "orientation": "hwl", "size": [2, 3, 3]},
+          {"id": "P48", "position": [5, 2, 4], "orientation": "wlh", "size": [2, 4, 1]}
+        ],
+        "violations": [
+          ["P16", "P1"],
+          ["P17", "P1"],
+          ["P5", "P35"],
+          ["P5", "P46"],
+          ["P16", "P32"],
+          ["P17", "P32"],
+          ["P17", "P46"],
+          ["P44", "P28"],
+          ["P28", "P48"],
+          ["P33", "P46"],
+          ["P33", "P48"],
+          ["P35", "P48"],
+          ["P44", "P48"]
+        ]
+      },
+      {
+        "id": "Truk-2",
+        "weight": 150,
+        "max_capacity": 150,
+        "packages": [
+          {"id": "P2", "position": [1, 0, 0], "orientation": "lhw", "size": [2, 2, 4]},
+          {"id": "P3", "position": [4, 3, 2], "orientation": "wlh", "size": [2, 1, 2]},
+          {"id": "P8", "position": [2, 3, 0], "orientation": "lhw", "size": [2, 3, 2]},
+          {"id": "P10", "position": [0, 2, 0], "orientation": "lhw", "size": [3, 1, 2]},
+          {"id": "P13", "position": [3, 0, 0], "orientation": "hwl", "size": [2, 2, 3]},
+          {"id": "P15", "position": [5, 1, 0], "orientation": "lhw", "size": [1, 2, 4]},
+          {"id": "P20", "position": [0, 3, 0], "orientation": "lhw", "size": [2, 3, 1]},
+          {"id": "P21", "position": [0, 2, 2], "orientation": "lwh", "size": [4, 3, 1]},
+          {"id": "P22", "position": [4, 4, 2], "orientation": "whl", "size": [2, 2, 1]},
+          {"id": "P26", "position": [3, 4, 3], "orientation": "lhw", "size": [2, 2, 1]},
+          {"id": "P27", "position": [4, 3, 0], "orientation": "hlw", "size": [2, 3, 2]},
+          {"id": "P36", "position": [0, 5, 2], "orientation": "lwh", "size": [3, 1, 2]},
+          {"id": "P39", "position": [1, 2, 3], "orientation": "lwh", "size": [3, 2, 1]},
+          {"id": "P42", "position": [0, 0, 0], "orientation": "hlw", "size": [1, 2, 2]}
+        ],
+        "violations": [
+          ["P8", "P21"],
+          ["P10", "P21"],
+          ["P20", "P21"],
+          ["P27", "P22"]
+        ]
+      },
+      {
+        "id": "Truk-3",
+        "weight": 118,
+        "max_capacity": 120,
+        "packages": [
+          {"id": "P14", "position": [0, 0, 3], "orientation": "wlh", "size": [3, 5, 1]},
+          {"id": "P25", "position": [3, 0, 0], "orientation": "wlh", "size": [2, 2, 2]},
+          {"id": "P38", "position": [3, 2, 3], "orientation": "hlw", "size": [3, 3, 1]},
+          {"id": "P41", "position": [4, 2, 0], "orientation": "hwl", "size": [1, 3, 3]},
+          {"id": "P43", "position": [1, 2, 0], "orientation": "hlw", "size": [3, 3, 3]},
+          {"id": "P45", "position": [1, 0, 0], "orientation": "lwh", "size": [2, 2, 3]}
+        ],
+        "violations": [
+          ["P43", "P14"],
+          ["P45", "P14"]
+        ]
+      }
+    ],
+    "outside": ["P4", "P6", "P7", "P9", "P11", "P18", "P19", "P23", "P24", "P29", "P30", "P34", "P37", "P40", "P47"]
+  },
+  "history": [754.994095069383, 849.994095069383, 924.9935045763212, 979.9926188367286, 1029.9915854738706, 1074.9911426040744, 1094.9911426040744, 1109.9908473575435, 1119.9908473575435, 1129.9906997342782, 1139.9898139946856, 1144.9898139946856, 1154.9895187481548, 1164.9890758783583, 1164.9904044877474, 1164.9911426040744, 1164.992766459994, 1164.993061706525, 1174.9929140832596, 1174.9932093297905, 1174.9935045763211, 1174.9936521995867, 1174.9939474461175, 1174.9943903159137, 1204.9912902273397, 1204.9917330971361, 1204.9918807204015, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667, 1204.992028343667],
+  "iterations": 47,
+  "duration": 4.939446210861206
+}
